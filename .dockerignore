@@ -1,0 +1,33 @@
+# Git / Python
+.git
+.gitignore
+.venv
+__pycache__
+*.pyc
+*.pyo
+*.egg-info
+.pytest_cache
+.mypy_cache
+
+# Runtime data (mounted as volumes in Docker)
+workspace/
+automation_output/
+logs/
+.env
+graphify-out/
+# Secrets & local OAuth
+client_secrets.json
+*.pem
+
+# Dev scratch
+lesson.pdf
+jid.txt
+
+# IDE
+.cursor
+.vscode
+.idea
+
+# Large local artifacts not needed in image
+models/
+automation_output/

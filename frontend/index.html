@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Multimodal Studio</title>
+  <meta name="description" content="Multimodal Studio — turn any document into a narrated, publish-ready video." />
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="apple-touch-icon" href="/static/favicon-256.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@500;700;800&family=Baloo+2:wght@500;700&family=Barlow:wght@400;600;700&family=Bebas+Neue&family=Bricolage+Grotesque:wght@500;700;800&family=Caveat:wght@500;700&family=Cormorant+Garamond:ital,wght@0,500;0,700;1,500&family=DM+Sans:wght@400;500;700;800&family=Figtree:wght@500;700&family=Fraunces:wght@500;700&family=Fredoka:wght@500;700&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;600;700&family=Instrument+Serif&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&family=Kanit:wght@500;700&family=Karla:wght@500;700&family=Lexend:wght@500;700&family=Literata:wght@500;700&family=Manrope:wght@500;700;800&family=Montserrat:wght@600;800&family=Newsreader:wght@500;700&family=Nunito:wght@600;800&family=Oswald:wght@500;700&family=Outfit:wght@500;700&family=Playfair+Display:wght@500;700&family=Plus+Jakarta+Sans:wght@500;700&family=Poppins:wght@500;700&family=Rubik:wght@500;700&family=Sora:wght@500;700&family=Source+Code+Pro:wght@500;700&family=Space+Grotesk:wght@500;700&family=Space+Mono:wght@400;700&family=Syne:wght@600;800&family=Work+Sans:wght@500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/styles.css" />
+  <link rel="stylesheet" href="/static/chitti.css" />
+  <script>
+    // Apply saved/OS theme + UI zoom before paint to avoid a flash of the wrong look.
+    (function () {
+      try {
+        var m = localStorage.getItem("cc-theme");
+        if (!m) m = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        if (m === "dark") document.documentElement.setAttribute("data-theme", "dark");
+        var z = parseInt(localStorage.getItem("mms_ui_zoom") || "100", 10);
+        if (!(z >= 80 && z <= 140)) z = 100;
+        document.documentElement.style.zoom = z + "%";
+        document.documentElement.setAttribute("data-ui-zoom", String(z));
+      } catch (e) {}
+    })();
+  </script>
+  <script src="https://unpkg.com/lucide@1.59.0/dist/umd/lucide.min.js"></script>
+  <script type="module" src="/static/muse-mark.js"></script>
+</head>
+<body>
+  <div class="bg-orbs" aria-hidden="true">
+    <span class="orb orb-a"></span>
+    <span class="orb orb-b"></span>
+    <span class="orb orb-c"></span>
+  </div>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="brand">
+        <span class="logo"><canvas class="muse-mark" width="76" height="76" aria-label="Muse mark"></canvas></span>
+        <span>Multimodal Studio</span>
+      </div>
+      <div class="header-right">
+        <span class="live-dot hidden" id="live-dot"><span></span>live</span>
+        <div class="ui-zoom" id="ui-zoom" title="Interface zoom">
+          <button type="button" class="ui-zoom-btn" id="zoom-out" aria-label="Zoom out">
+            <i data-lucide="minus"></i>
+          </button>
+          <button type="button" class="ui-zoom-value" id="zoom-value" aria-haspopup="listbox" aria-expanded="false" aria-label="Zoom level">100%</button>
+          <button type="button" class="ui-zoom-btn" id="zoom-in" aria-label="Zoom in">
+            <i data-lucide="plus"></i>
+          </button>
+          <div class="ui-zoom-menu hidden" id="zoom-menu" role="listbox" aria-label="Zoom presets">
+            <button type="button" class="ui-zoom-opt" data-zoom="80" role="option">80%</button>
+            <button type="button" class="ui-zoom-opt" data-zoom="90" role="option">90%</button>
+            <button type="button" class="ui-zoom-opt" data-zoom="100" role="option">100%</button>
+            <button type="button" class="ui-zoom-opt" data-zoom="110" role="option">110%</button>
+            <button type="button" class="ui-zoom-opt" data-zoom="125" role="option">125%</button>
+            <button type="button" class="ui-zoom-opt" data-zoom="140" role="option">140%</button>
+          </div>
+        </div>
+        <button class="theme-toggle" id="theme-toggle" title="Toggle light / dark theme" aria-label="Toggle light / dark theme">
+          <i data-lucide="sun" class="ic-sun"></i>
+          <i data-lucide="moon" class="ic-moon"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Top navigation -->
+    <nav class="top-nav" id="main-nav">
+      <button class="stab active" data-view="studio"><i data-lucide="clapperboard"></i> Studio</button>
+      <button class="stab" data-view="sessions"><i data-lucide="history"></i> History</button>
+      <button class="stab" data-view="video-edit"><i data-lucide="image"></i> Image lab</button>
+      <button class="stab" data-view="admin"><i data-lucide="layout-dashboard"></i> Admin</button>
+    </nav>
+
+    <!-- =============================================== STUDIO VIEW =========== -->
+    <div class="view" id="view-studio">
+    <!-- Current workspace strip (New + active session only — full list is History) -->
+    <div class="session-tabs" id="session-tabs">
+      <button class="stab stab-new" id="tab-new" title="Start fresh — input new knowledge"><i data-lucide="plus"></i> New</button>
+      <div class="stab-list" id="stab-list"><!-- active session tab injected --></div>
+    </div>
+
+    <!-- Horizontal pipeline strip -->
+    <div class="flowstrip" id="flowstrip">
+      <div class="node"><i data-lucide="file-text"></i><span>Document</span></div>
+      <i class="arrow" data-lucide="chevron-right"></i>
+      <div class="node"><i data-lucide="scan-eye"></i><span>VLM extract</span></div>
+      <i class="arrow" data-lucide="chevron-right"></i>
+      <div class="node"><i data-lucide="layout-template"></i><span>Slides</span></div>
+      <i class="arrow" data-lucide="chevron-right"></i>
+      <div class="node"><i data-lucide="mic"></i><span>Voiceover</span></div>
+      <i class="arrow" data-lucide="chevron-right"></i>
+      <div class="node"><i data-lucide="clapperboard"></i><span>Video</span></div>
+      <i class="arrow" data-lucide="chevron-right"></i>
+      <div class="node"><i data-lucide="youtube"></i><span>Publish</span></div>
+    </div>
+
+    <!-- Two-column workspace -->
+    <div class="workspace">
+      <!-- LEFT: setup -->
+      <section class="col col-left">
+        <div class="card" id="upload-card">
+          <div class="card-header">
+            <h2 class="card-title"><i data-lucide="book-open"></i> Input knowledge</h2>
+            <p class="card-desc">Upload source material — papers, notes, slides, docs — then pick format and run.</p>
+          </div>
+          <div class="card-body">
+            <nav class="left-tabs" id="left-tabs">
+              <button type="button" class="left-tab active" data-left="setup"><i data-lucide="settings-2"></i> Setup</button>
+              <button type="button" class="left-tab" data-left="voices" id="left-tab-voices"><i data-lucide="mic"></i> Voices</button>
+            </nav>
+
+            <div class="left-panel" id="left-panel-setup">
+            <div class="dropzone" id="dropzone">
+              <div class="dz-icon"><i data-lucide="upload-cloud"></i></div>
+              <div class="dz-main" id="dz-main">Drop your knowledge source here</div>
+              <div class="dz-sub" id="dz-sub">PDF, Word, PPT, TXT, Markdown, images &middot; or click to browse</div>
+              <input type="file" id="file-input" class="hidden" accept=".pdf,.docx,.doc,.pptx,.ppt,.txt,.md,.markdown,.rtf,.odt,.html,.htm,.epub,.csv,.xlsx,.xlsm,.png,.jpg,.jpeg,.webp,.bmp,.gif,.tiff,.tif,image/*" />
+            </div>
+
+            <!-- Topic plan for large documents (books / long PDFs) -->
+            <div class="topic-plan-card hidden" id="topic-plan-card">
+              <div class="topic-plan-head">
+                <div>
+                  <div class="label"><i data-lucide="waypoints"></i> Topic plan</div>
+                  <p class="hint" id="topic-plan-meta">Classify a long document into selectable video topics.</p>
+                </div>
+                <div class="topic-plan-actions">
+                  <button type="button" class="btn-sm" id="topic-plan-btn" title="Extract + classify topics"><i data-lucide="scan-search"></i> Plan topics</button>
+                  <button type="button" class="btn-sm ghost" id="topic-plan-refresh" hidden title="Re-run classification"><i data-lucide="refresh-cw"></i></button>
+                </div>
+              </div>
+              <div id="topic-plan-body" class="topic-plan-body hidden">
+                <div class="topic-plan-modes" role="radiogroup" aria-label="Video mode">
+                  <label class="topic-mode">
+                    <input type="radio" name="topic-mode" value="single" />
+                    <span>One video</span>
+                    <em>combine selected topics</em>
+                  </label>
+                  <label class="topic-mode">
+                    <input type="radio" name="topic-mode" value="per_topic" checked />
+                    <span>Multiple videos</span>
+                    <em>one video per topic</em>
+                  </label>
+                </div>
+                <div class="topic-plan-toolbar">
+                  <button type="button" class="btn-sm" id="topic-select-rec">Recommended</button>
+                  <button type="button" class="btn-sm" id="topic-select-all">All</button>
+                  <button type="button" class="btn-sm" id="topic-select-none">None</button>
+                  <span class="hint" id="topic-selected-count">0 selected</span>
+                </div>
+                <div class="topic-plan-list" id="topic-plan-list"></div>
+                <div class="switch-row" style="margin-top:8px">
+                  <div>
+                    <div class="label"><i data-lucide="globe"></i> Auto web grounding</div>
+                    <div class="hint">Research each selected topic on the live web for examples &amp; citations.</div>
+                  </div>
+                  <button class="switch on" id="topic-grounding-switch" aria-label="Toggle web grounding" aria-pressed="true"></button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Video format selector -->
+            <div class="field">
+              <div class="field-head">
+                <label class="label"><i data-lucide="monitor-play"></i> Video format</label>
+                <span class="hint" id="format-ratio">16:9</span>
+              </div>
+              <div class="format-grid" id="format-grid"><!-- format cards injected --></div>
+              <p class="format-desc" id="format-desc"></p>
+            </div>
+
+            <!-- Unified Visual style (layout + color palette — single picker) -->
+            <details class="opts-expander visual-design-expander" id="visual-design-expander" open>
+              <summary class="opts-summary">
+                <span class="opts-summary-main"><i data-lucide="clapperboard"></i> Visual style</span>
+                <span class="opts-summary-hint" id="visual-design-hint">Auto</span>
+                <i class="opts-chevron" data-lucide="chevron-down"></i>
+              </summary>
+              <div class="opts-body">
+                <p class="format-desc visual-design-lead">Twelve templates, each built differently, with its own layout, font pair and way of moving: Whiteboard, Notebook, Chalkboard, Editorial, Magazine, Broadcast, Glass, Bento, Poster, Pop, Cinema and Terminal. Pick a colour on the strip.</p>
+                <div class="visual-style-filters" id="visual-style-filters" role="tablist" aria-label="Templates"></div>
+                <div class="visual-preset-grid" id="visual-preset-grid"></div>
+                <div class="visual-color-strip" id="visual-color-strip" hidden>
+                  <div class="visual-color-label"><i data-lucide="palette"></i> Colors</div>
+                  <div class="visual-color-swatches" id="visual-color-swatches" role="listbox" aria-label="Color palette"></div>
+                </div>
+                <p class="format-desc" id="visual-preset-desc"></p>
+              </div>
+            </details>
+
+            <!-- Legacy hooks (hidden) — admin carousel still uses style-grid -->
+            <details class="opts-expander style-expander hidden" id="style-expander" hidden>
+              <summary class="opts-summary"></summary>
+              <div class="opts-body"><div class="style-grid" id="style-grid"></div><p class="format-desc" id="style-desc"></p></div>
+            </details>
+            <details class="opts-expander look-expander hidden" id="look-expander" hidden>
+              <summary class="opts-summary"></summary>
+              <div class="opts-body"><div class="theme-grid" id="theme-grid"></div><p class="format-desc" id="theme-desc"></p></div>
+            </details>
+            <span class="hidden" id="style-name"></span>
+            <span class="hidden" id="look-summary-hint"></span>
+            <span class="hidden" id="theme-name"></span>
+            <div class="field">
+              <div class="field-head">
+                <label class="label"><i data-lucide="timer"></i> Target length</label>
+                <span class="field-value" id="dur-value">Auto</span>
+              </div>
+              <div class="chip-row" id="dur-chips"><!-- duration chips injected --></div>
+            </div>
+
+            <div class="field">
+              <div class="field-head">
+                <label class="label" for="content-layout"><i data-lucide="layout-template"></i> Content layout</label>
+                <span class="hint">used on every run</span>
+              </div>
+              <select id="content-layout" class="text-input">
+                <option value="auto">Auto — match the document</option>
+                <option value="teaching">Teach — steps / flow / hub</option>
+                <option value="story">Story — hook / quote / arc</option>
+                <option value="ppt">PPT deck — cards / matrix (Gamma)</option>
+                <option value="modern_ppt">Modern PPT — mosaic / process / wave</option>
+                <option value="hyper">Hyper design — Swiss / Velvet / Maximalist</option>
+                <option value="motion">Motion · Remotion — kinetic / captions / promo</option>
+                <option value="content">Content layouts — bento / KPI / proof / timeline</option>
+                <option value="diagram">Diagram-heavy — systems &amp; pipelines</option>
+                <option value="dense">Dense brief — stats / bars / matrix</option>
+              </select>
+            </div>
+
+            <details class="opts-expander audience-expander" id="audience-card" open>
+              <summary class="opts-summary">
+                <span class="opts-summary-main"><i data-lucide="users"></i> Audience</span>
+                <span class="opts-summary-hint" id="audience-hint">age + knowledge</span>
+                <i class="opts-chevron" data-lucide="chevron-down"></i>
+              </summary>
+              <div class="opts-body">
+                <div class="audience-grid">
+                  <div class="field" style="margin-top:0">
+                    <div class="field-head">
+                      <label class="label" for="age-group">Age group</label>
+                    </div>
+                    <select id="age-group" class="text-input" aria-label="Age group">
+                      <option value="auto">Auto — from document or prompt</option>
+                      <option value="kids">Kids (5–8)</option>
+                      <option value="tweens">Tweens (9–12)</option>
+                      <option value="teens">Teens (13–17)</option>
+                      <option value="young_adults">Young adults (18–24)</option>
+                      <option value="adults">Adults</option>
+                      <option value="professionals">Professionals</option>
+                      <option value="all_ages">All ages / family</option>
+                    </select>
+                  </div>
+                  <div class="field" style="margin-top:0">
+                    <div class="field-head">
+                      <label class="label" for="knowledge-level">Knowledge</label>
+                    </div>
+                    <select id="knowledge-level" class="text-input" aria-label="Knowledge understanding">
+                      <option value="auto">Auto — from document or prompt</option>
+                      <option value="beginner">Beginner</option>
+                      <option value="intermediate">Intermediate</option>
+                      <option value="advanced">Advanced</option>
+                      <option value="expert">Expert</option>
+                    </select>
+                  </div>
+                </div>
+                <details class="opts-expander audience-prompt-expander" id="audience-prompt-wrap">
+                  <summary class="opts-summary">
+                    <span class="opts-summary-main"><i data-lucide="sparkles"></i> Custom teaching prompt</span>
+                    <span class="opts-summary-hint">edit or reload</span>
+                    <i class="opts-chevron" data-lucide="chevron-down"></i>
+                  </summary>
+                  <div class="opts-body">
+                    <div class="field-head">
+                      <span class="hint" id="custom-prompt-meta">Loads with age + knowledge. Edit freely.</span>
+                      <button type="button" class="btn-sm ghost" id="custom-prompt-reset" title="Reload the prompt for this age + knowledge">Reload</button>
+                    </div>
+                    <textarea id="custom-prompt" class="text-input audience-prompt" rows="4" placeholder="Loaded from age group + knowledge — edit to customize. Engaging, age-fit language; one idea per slide."></textarea>
+                  </div>
+                </details>
+              </div>
+            </details>
+
+            <!-- More options (topics, publishing, slide images) -->
+            <details class="opts-expander more-options-expander" id="more-options-expander">
+              <summary class="opts-summary">
+                <span class="opts-summary-main"><i data-lucide="sliders-horizontal"></i> More options</span>
+                <span class="opts-summary-hint">topics, publishing, slide images</span>
+                <i class="opts-chevron" data-lucide="chevron-down"></i>
+              </summary>
+              <div class="opts-body">
+                <div class="field">
+                  <div class="field-head">
+                    <label class="label" for="topics-input"><i data-lucide="list-plus"></i> Add topics</label>
+                    <span class="hint">web researched · comma separated</span>
+                  </div>
+                  <input type="text" id="topics-input" class="text-input" placeholder="e.g. real-world examples, common mistakes, industry case studies" />
+                  <p class="hint" style="margin-top:0.4rem">We search the web (DuckDuckGo, Wikipedia, + optional Brave/Tavily/Serper) and pull short page extracts so slides get concrete examples — not just keywords.</p>
+                </div>
+
+                <div class="switch-row">
+                  <div>
+                    <div class="label"><i data-lucide="globe"></i> Search the web for this video</div>
+                    <div class="hint">Force live web research on your topics — even for uploaded documents. Off: only topic-only jobs research automatically.</div>
+                  </div>
+                  <button class="switch" id="web-research-switch" aria-label="Toggle web research" aria-pressed="false"></button>
+                </div>
+
+                <div class="switch-row">
+                  <div>
+                    <div class="label"><i data-lucide="youtube"></i> Publish to YouTube</div>
+                    <div class="hint" id="yt-hint">Uploads the final video (Google sign-in)</div>
+                  </div>
+                  <button class="switch" id="publish-switch" aria-label="Toggle publish"></button>
+                </div>
+
+                <div class="switch-row">
+                  <div>
+                    <div class="label"><i data-lucide="image-plus"></i> AI images in slides</div>
+                    <div class="hint">Experimental — default off. Enable later after Image lab quality checks.</div>
+                  </div>
+                  <button class="switch" id="slide-ai-images-switch" aria-label="Toggle AI images in slides" aria-pressed="false"></button>
+                </div>
+              </div>
+            </details>
+
+            <div class="alert hidden" id="upload-alert"></div>
+            </div><!-- /left-panel-setup -->
+
+            <div class="left-panel hidden" id="left-panel-voices">
+              <div class="voice-engine-bar" id="voice-engine-bar">
+                <span class="voice-engine-label"><i data-lucide="sparkles"></i> Studio voice</span>
+                <span class="voice-engine-detail" id="voice-engine-detail">Loading…</span>
+              </div>
+              <div class="field" id="voice-field">
+                <div class="field-head">
+                  <label class="label"><i data-lucide="mic"></i> Narration voice</label>
+                  <span class="hint" id="voice-limit-hint">Pick a voice</span>
+                </div>
+                <p class="format-desc">Studio voices narrate the whole video. Muse Wonder writes the script. Preview a card, then run.</p>
+
+                <div class="voice-now" id="voice-now" aria-live="polite">
+                  <div class="voice-now-wave" aria-hidden="true">
+                    <span></span><span></span><span></span><span></span><span></span>
+                  </div>
+                  <div class="voice-now-copy">
+                    <div class="voice-now-kicker">Now narrating with</div>
+                    <div class="voice-now-name" id="voice-now-name">Kore</div>
+                    <div class="voice-now-sub" id="voice-now-sub">Studio · Firm</div>
+                  </div>
+                  <button type="button" class="btn-sm accent voice-now-preview" id="voice-preview-btn">
+                    <i data-lucide="play"></i> Preview
+                  </button>
+                </div>
+                <audio id="voice-preview-audio" class="voice-preview-audio hidden" controls preload="none"></audio>
+                <p class="voice-status hidden" id="voice-status" role="status"></p>
+                <p class="voice-preview-note">Sample: &ldquo;Hello! This is a quick sample of how this voice will sound…&rdquo;</p>
+
+                <div class="voice-subhead">Gender</div>
+                <div class="voice-filter" id="voice-filter" role="tablist" aria-label="Studio voice filter">
+                  <button type="button" class="voice-filter-btn active" data-filter="all">All</button>
+                  <button type="button" class="voice-filter-btn" data-filter="female">Female</button>
+                  <button type="button" class="voice-filter-btn" data-filter="male">Male</button>
+                </div>
+                <div class="voice-subhead"><i data-lucide="list"></i> Studio voices</div>
+                <div class="voice-grid" id="voice-grid"><!-- muse voices --></div>
+              </div>
+            </div><!-- /left-panel-voices -->
+
+            <div class="run-sticky">
+              <button class="btn btn-primary btn-block" id="run-btn" disabled>
+                <i data-lucide="play"></i> Run pipeline
+              </button>
+              <p class="hint" id="run-hint">Tip: for books / long PDFs, use <b>Plan topics</b> then Run — one video or many, with web grounding.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- RIGHT: pipeline + outputs -->
+      <section class="col col-right">
+        <div class="card hidden" id="progress-card">
+          <div class="card-header">
+            <div class="row-between">
+              <h2 class="card-title"><i data-lucide="workflow"></i> Pipeline</h2>
+              <span class="card-desc" id="progress-sub">Processing&hellip;</span>
+            </div>
+            <div class="progress-track"><span class="progress-fill" id="progress-fill"></span></div>
+          </div>
+          <div class="card-body">
+            <div class="stages" id="stages"></div>
+          </div>
+        </div>
+
+        <div class="card hidden" id="review-card">
+          <div class="card-header">
+            <div class="row-between">
+              <h2 class="card-title"><i data-lucide="scan-search"></i> Content review</h2>
+              <span class="card-desc" id="review-score"></span>
+            </div>
+            <p class="card-desc">Duplicates and voice ↔ highlight sync against the current script.</p>
+          </div>
+          <div class="card-body">
+            <p class="review-summary" id="review-summary">Generate slides to review them.</p>
+            <div class="review-toolbar">
+              <div class="field" style="margin-top:0">
+                <div class="field-head">
+                  <label class="label" for="review-notes">What should we check?</label>
+                </div>
+                <textarea id="review-notes" class="text-input audience-prompt" rows="2" placeholder="e.g. duplicates and voice sync on slides 3 and 5"></textarea>
+              </div>
+              <button type="button" class="btn-sm accent" id="review-run-btn"><i data-lucide="scan-search"></i> Review</button>
+            </div>
+            <div class="review-issues" id="review-issues"></div>
+          </div>
+        </div>
+
+        <div class="card hidden" id="record-card">
+          <div class="card-header">
+            <h2 class="card-title"><i data-lucide="mic-vocal"></i> Record narration</h2>
+            <p class="card-desc">Optional. Record a slide to replace studio narration on that slide only.</p>
+          </div>
+          <div class="card-body">
+            <div class="record-panel" id="record-panel">
+              <p class="record-note" id="record-note">Run the pipeline first to generate a script, then record each slide in your own voice.</p>
+              <div class="record-slides" id="record-slides"><!-- per-slide recorders injected --></div>
+            </div>
+          </div>
+        </div>
+
+        <details class="card hidden opts-expander pages-expander" id="pages-card">
+          <summary class="card-header pages-summary">
+            <div>
+              <h2 class="card-title"><i data-lucide="images"></i> Slides</h2>
+              <p class="card-desc">Rendered slide frames — expand to preview.</p>
+            </div>
+            <i class="opts-chevron" data-lucide="chevron-down"></i>
+          </summary>
+          <div class="card-body">
+            <div class="thumbs" id="pages"></div>
+          </div>
+        </details>
+
+        <div class="card hidden" id="publish-card">
+          <div class="card-header">
+            <h2 class="card-title"><i data-lucide="megaphone"></i> Publish details</h2>
+            <p class="card-desc">Generate copy per platform when you need it — stored in this job so you can finish any tab later. Copy or download, then paste into the portal (or Post where credentials are set).</p>
+          </div>
+          <div class="card-body">
+            <p class="publish-msg hidden" id="publish-msg"></p>
+            <div class="social-ready-bar" id="social-ready-bar" hidden></div>
+
+            <nav class="social-tabs" id="social-tabs" aria-label="Social platforms">
+              <button type="button" class="social-tab active" data-platform="youtube"><i data-lucide="youtube"></i><span>YouTube</span></button>
+              <button type="button" class="social-tab" data-platform="instagram"><i data-lucide="instagram"></i><span>Instagram</span></button>
+              <button type="button" class="social-tab" data-platform="x"><i data-lucide="twitter"></i><span>Twitter</span></button>
+              <button type="button" class="social-tab" data-platform="linkedin"><i data-lucide="linkedin"></i><span>LinkedIn</span></button>
+              <button type="button" class="social-tab" data-platform="tiktok"><i data-lucide="video"></i><span>TikTok</span></button>
+              <button type="button" class="social-tab" data-platform="substack"><i data-lucide="mail"></i><span>Substack</span></button>
+              <button type="button" class="social-tab" data-platform="medium"><i data-lucide="book-open"></i><span>Medium</span></button>
+            </nav>
+
+            <!-- YouTube: title/desc/tags + on-demand thumbnail -->
+            <div class="social-pane is-active" id="social-pane-youtube" data-platform="youtube">
+              <div class="social-pane-head">
+                <p class="social-sub">Everything needed to upload: title, description, tags, thumbnail, then Post (or Copy / Download).</p>
+              </div>
+              <div class="pub-grid">
+                <div class="pub-main">
+                  <label class="pub-label" for="pub-title">Title</label>
+                  <input type="text" class="pub-input" id="pub-title" maxlength="100" placeholder="Video title" />
+                  <label class="pub-label" for="pub-desc">Description</label>
+                  <textarea class="pub-input pub-desc" id="pub-desc" rows="7" placeholder="Video description"></textarea>
+                  <label class="pub-label" for="pub-tags">Tags / hashtags (comma separated)</label>
+                  <input type="text" class="pub-input" id="pub-tags" placeholder="education, tutorial, ..." />
+                  <div class="pub-actions">
+                    <button class="btn-sm" id="pub-save"><i data-lucide="save"></i> Save details</button>
+                    <button class="btn-sm accent" id="pub-regen-text"><i data-lucide="sparkles"></i> Generate YouTube text</button>
+                    <button type="button" class="btn-sm ghost" id="pub-copy"><i data-lucide="copy"></i> Copy</button>
+                    <button type="button" class="btn-sm ghost" id="pub-download"><i data-lucide="download"></i> Download .md</button>
+                  </div>
+                  <div class="social-post-box" data-platform="youtube">
+                    <div class="social-post-modes">
+                      <label class="social-mode"><input type="radio" name="mode-youtube" value="video" checked /> Video + content</label>
+                      <label class="social-mode"><input type="radio" name="mode-youtube" value="image" /> Thumbnail + content</label>
+                    </div>
+                    <div class="pub-actions">
+                      <button type="button" class="btn-sm accent social-post-btn" data-platform="youtube"><i data-lucide="upload"></i> Post to YouTube</button>
+                    </div>
+                    <p class="social-post-status" data-platform="youtube"></p>
+                  </div>
+                </div>
+                <div class="pub-thumb">
+                  <label class="pub-label">Thumbnail</label>
+                  <div class="thumb-frame" id="thumb-frame">
+                    <span class="thumb-empty" id="thumb-empty"><i data-lucide="image"></i>No thumbnail yet — click Generate</span>
+                    <img class="thumb-img hidden" id="thumb-img" alt="thumbnail" />
+                  </div>
+                  <button class="btn-sm accent" id="pub-regen-thumb"><i data-lucide="image"></i> Generate thumbnail</button>
+                  <ul class="social-checklist" id="yt-checklist">
+                    <li data-yt="title">Title</li>
+                    <li data-yt="desc">Description</li>
+                    <li data-yt="tags">Tags</li>
+                    <li data-yt="thumb">Thumbnail</li>
+                    <li data-yt="video">Final video</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <!-- Instagram -->
+            <div class="social-pane hidden" id="social-pane-instagram" data-platform="instagram">
+              <div class="social-pane-head">
+                <p class="social-sub">Caption, hashtags, and Instagram-sized slide images (carousel) or Reel.</p>
+                <button type="button" class="btn-sm accent social-gen-btn" data-platform="instagram"><i data-lucide="sparkles"></i> Generate Instagram</button>
+              </div>
+              <div class="social-panel" data-platform="instagram">
+                <label class="pub-label">Title</label>
+                <input type="text" class="pub-input social-field-title" data-platform="instagram" />
+                <label class="pub-label">Caption</label>
+                <textarea class="pub-input pub-desc social-field-desc" data-platform="instagram" rows="5"></textarea>
+                <label class="pub-label">Hashtags <span class="social-copy-hint social-field-hint" data-platform="instagram"></span></label>
+                <div class="social-tags social-field-tags" data-platform="instagram"></div>
+                <div class="social-post-box" data-platform="instagram">
+                  <div class="social-post-modes">
+                    <label class="social-mode"><input type="radio" name="mode-instagram" value="carousel" checked /> Carousel (slides → square images)</label>
+                    <label class="social-mode"><input type="radio" name="mode-instagram" value="image" /> Image + content</label>
+                    <label class="social-mode"><input type="radio" name="mode-instagram" value="video" /> Video / Reel + content</label>
+                  </div>
+                  <div class="pub-actions">
+                    <button type="button" class="btn-sm" id="ig-prep-carousel"><i data-lucide="images"></i> Prepare slide images</button>
+                    <button type="button" class="btn-sm ghost social-copy-btn" data-platform="instagram"><i data-lucide="copy"></i> Copy</button>
+                    <button type="button" class="btn-sm ghost social-download-btn" data-platform="instagram"><i data-lucide="download"></i> Download</button>
+                    <button type="button" class="btn-sm accent social-post-btn" data-platform="instagram"><i data-lucide="send"></i> Post to Instagram</button>
+                  </div>
+                  <div class="ig-carousel-preview" id="ig-carousel-preview" hidden></div>
+                  <p class="social-post-status" data-platform="instagram"></p>
+                </div>
+              </div>
+              <p class="social-empty social-field-empty" data-platform="instagram">Click Generate Instagram to create a post.</p>
+            </div>
+
+            <div class="social-pane hidden" id="social-pane-x" data-platform="x">
+              <div class="social-pane-head">
+                <p class="social-sub">Twitter / X post with optional video or image.</p>
+                <button type="button" class="btn-sm accent social-gen-btn" data-platform="x"><i data-lucide="sparkles"></i> Generate Twitter</button>
+              </div>
+              <div class="social-panel" data-platform="x">
+                <label class="pub-label">Title</label>
+                <input type="text" class="pub-input social-field-title" data-platform="x" />
+                <label class="pub-label">Post</label>
+                <textarea class="pub-input pub-desc social-field-desc" data-platform="x" rows="4"></textarea>
+                <label class="pub-label">Hashtags <span class="social-copy-hint social-field-hint" data-platform="x"></span></label>
+                <div class="social-tags social-field-tags" data-platform="x"></div>
+                <div class="social-post-box" data-platform="x">
+                  <div class="social-post-modes">
+                    <label class="social-mode"><input type="radio" name="mode-x" value="video" checked /> Video + content</label>
+                    <label class="social-mode"><input type="radio" name="mode-x" value="image" /> Image + content</label>
+                  </div>
+                  <div class="pub-actions">
+                    <button type="button" class="btn-sm ghost social-copy-btn" data-platform="x"><i data-lucide="copy"></i> Copy</button>
+                    <button type="button" class="btn-sm ghost social-download-btn" data-platform="x"><i data-lucide="download"></i> Download</button>
+                    <button type="button" class="btn-sm accent social-post-btn" data-platform="x"><i data-lucide="send"></i> Post to Twitter</button>
+                  </div>
+                  <p class="social-post-status" data-platform="x"></p>
+                </div>
+              </div>
+              <p class="social-empty social-field-empty" data-platform="x">Click Generate Twitter to create a post.</p>
+            </div>
+
+            <div class="social-pane hidden" id="social-pane-linkedin" data-platform="linkedin">
+              <div class="social-pane-head">
+                <p class="social-sub">LinkedIn post for a professional audience.</p>
+                <button type="button" class="btn-sm accent social-gen-btn" data-platform="linkedin"><i data-lucide="sparkles"></i> Generate LinkedIn</button>
+              </div>
+              <div class="social-panel" data-platform="linkedin">
+                <label class="pub-label">Headline</label>
+                <input type="text" class="pub-input social-field-title" data-platform="linkedin" />
+                <label class="pub-label">Post</label>
+                <textarea class="pub-input pub-desc social-field-desc" data-platform="linkedin" rows="5"></textarea>
+                <label class="pub-label">Hashtags <span class="social-copy-hint social-field-hint" data-platform="linkedin"></span></label>
+                <div class="social-tags social-field-tags" data-platform="linkedin"></div>
+                <div class="social-post-box" data-platform="linkedin">
+                  <div class="social-post-modes">
+                    <label class="social-mode"><input type="radio" name="mode-linkedin" value="video" checked /> Video + content</label>
+                    <label class="social-mode"><input type="radio" name="mode-linkedin" value="image" /> Image + content</label>
+                  </div>
+                  <div class="pub-actions">
+                    <button type="button" class="btn-sm ghost social-copy-btn" data-platform="linkedin"><i data-lucide="copy"></i> Copy</button>
+                    <button type="button" class="btn-sm ghost social-download-btn" data-platform="linkedin"><i data-lucide="download"></i> Download</button>
+                    <button type="button" class="btn-sm accent social-post-btn" data-platform="linkedin"><i data-lucide="send"></i> Post to LinkedIn</button>
+                  </div>
+                  <p class="social-post-status" data-platform="linkedin"></p>
+                </div>
+              </div>
+              <p class="social-empty social-field-empty" data-platform="linkedin">Click Generate LinkedIn to create a post.</p>
+            </div>
+
+            <div class="social-pane hidden" id="social-pane-tiktok" data-platform="tiktok">
+              <div class="social-pane-head">
+                <p class="social-sub">TikTok caption — generate when ready, then Copy / Download to paste in the app.</p>
+                <button type="button" class="btn-sm accent social-gen-btn" data-platform="tiktok"><i data-lucide="sparkles"></i> Generate TikTok</button>
+              </div>
+              <div class="social-panel" data-platform="tiktok">
+                <label class="pub-label">Hook / title</label>
+                <input type="text" class="pub-input social-field-title" data-platform="tiktok" />
+                <label class="pub-label">Caption</label>
+                <textarea class="pub-input pub-desc social-field-desc" data-platform="tiktok" rows="4"></textarea>
+                <label class="pub-label">Hashtags <span class="social-copy-hint social-field-hint" data-platform="tiktok"></span></label>
+                <div class="social-tags social-field-tags" data-platform="tiktok"></div>
+                <div class="social-post-box" data-platform="tiktok">
+                  <div class="pub-actions">
+                    <button type="button" class="btn-sm ghost social-copy-btn" data-platform="tiktok"><i data-lucide="copy"></i> Copy</button>
+                    <button type="button" class="btn-sm ghost social-download-btn" data-platform="tiktok"><i data-lucide="download"></i> Download</button>
+                  </div>
+                  <p class="social-hint">No API post yet — download the video from Outputs and paste this caption in TikTok.</p>
+                  <p class="social-post-status" data-platform="tiktok"></p>
+                </div>
+              </div>
+              <p class="social-empty social-field-empty" data-platform="tiktok">Click Generate TikTok when you want a caption.</p>
+            </div>
+
+            <div class="social-pane hidden" id="social-pane-substack" data-platform="substack">
+              <div class="social-pane-head">
+                <p class="social-sub">Full Substack newsletter (Markdown). Generate anytime — reuses this job’s narration &amp; slides.</p>
+                <button type="button" class="btn-sm accent social-gen-btn" data-platform="substack"><i data-lucide="sparkles"></i> Generate Substack</button>
+              </div>
+              <div class="social-panel" data-platform="substack">
+                <label class="pub-label">Subject / title</label>
+                <input type="text" class="pub-input social-field-title" data-platform="substack" />
+                <label class="pub-label">Newsletter body (Markdown)</label>
+                <textarea class="pub-input pub-desc social-field-desc social-field-blog" data-platform="substack" rows="14"></textarea>
+                <label class="pub-label">Topics <span class="social-copy-hint social-field-hint" data-platform="substack"></span></label>
+                <div class="social-tags social-field-tags" data-platform="substack"></div>
+                <div class="social-post-box" data-platform="substack">
+                  <div class="pub-actions">
+                    <button type="button" class="btn-sm ghost social-copy-btn" data-platform="substack"><i data-lucide="copy"></i> Copy</button>
+                    <button type="button" class="btn-sm ghost social-download-btn" data-platform="substack"><i data-lucide="download"></i> Download .md</button>
+                  </div>
+                  <p class="social-hint">Paste into Substack editor (or upload the .md). No direct API publish.</p>
+                  <p class="social-post-status" data-platform="substack"></p>
+                </div>
+              </div>
+              <p class="social-empty social-field-empty" data-platform="substack">Click Generate Substack to draft the newsletter.</p>
+            </div>
+
+            <div class="social-pane hidden" id="social-pane-medium" data-platform="medium">
+              <div class="social-pane-head">
+                <p class="social-sub">Full Medium article (Markdown). Generate anytime from stored job context.</p>
+                <button type="button" class="btn-sm accent social-gen-btn" data-platform="medium"><i data-lucide="sparkles"></i> Generate Medium</button>
+              </div>
+              <div class="social-panel" data-platform="medium">
+                <label class="pub-label">Headline</label>
+                <input type="text" class="pub-input social-field-title" data-platform="medium" />
+                <label class="pub-label">Article body (Markdown)</label>
+                <textarea class="pub-input pub-desc social-field-desc social-field-blog" data-platform="medium" rows="14"></textarea>
+                <label class="pub-label">Tags <span class="social-copy-hint social-field-hint" data-platform="medium"></span></label>
+                <div class="social-tags social-field-tags" data-platform="medium"></div>
+                <div class="social-post-box" data-platform="medium">
+                  <div class="pub-actions">
+                    <button type="button" class="btn-sm ghost social-copy-btn" data-platform="medium"><i data-lucide="copy"></i> Copy</button>
+                    <button type="button" class="btn-sm ghost social-download-btn" data-platform="medium"><i data-lucide="download"></i> Download .md</button>
+                  </div>
+                  <p class="social-hint">Paste into Medium (or upload the .md). No direct API publish.</p>
+                  <p class="social-post-status" data-platform="medium"></p>
+                </div>
+              </div>
+              <p class="social-empty social-field-empty" data-platform="medium">Click Generate Medium to draft the article.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card hidden" id="artifacts-card">
+          <div class="card-header">
+            <h2 class="card-title"><i data-lucide="package"></i> Outputs</h2>
+            <p class="card-desc">Generated files.</p>
+          </div>
+          <div class="card-body">
+            <div class="artifacts" id="artifacts"></div>
+            <video id="preview-video" class="preview hidden" controls preload="metadata"></video>
+            <img id="preview-thumb" class="preview preview-thumb hidden" alt="Thumbnail preview" />
+          </div>
+        </div>
+
+        <div class="empty-state" id="empty-state">
+          <i data-lucide="clapperboard"></i>
+          <p>Your pipeline and generated video will appear here.</p>
+        </div>
+      </section>
+    </div>
+    </div><!-- /view-studio -->
+
+    <!-- =============================================== SESSIONS VIEW ========= -->
+    <div class="view hidden" id="view-sessions">
+      <div class="admin-head">
+        <div class="admin-title"><i data-lucide="history"></i> History
+          <span class="sub">Every video you've generated — open to review, re-run, or delete.</span>
+        </div>
+        <button class="btn-sm" id="sessions-refresh"><i data-lucide="refresh-cw"></i> Refresh</button>
+      </div>
+      <div class="session-grid" id="session-grid"></div>
+      <div class="admin-empty hidden" id="sessions-empty">No sessions yet — upload knowledge in the Studio to begin.</div>
+    </div>
+
+    <!-- =============================================== IMAGE LAB VIEW ======== -->
+    <div class="view hidden" id="view-video-edit">
+      <div class="admin-head">
+        <div class="admin-title"><i data-lucide="image"></i> Image lab
+          <span class="sub">Muse Image cloud thumbnails. Local image models can be added later.</span>
+        </div>
+        <button class="btn-sm" id="media-refresh"><i data-lucide="refresh-cw"></i> Refresh status</button>
+      </div>
+
+      <nav class="media-subnav" id="media-subnav">
+        <button type="button" class="media-sub active" data-media="status"><i data-lucide="cpu"></i> Backends</button>
+        <button type="button" class="media-sub" data-media="test"><i data-lucide="sparkles"></i> Run test</button>
+        <button type="button" class="media-sub" data-media="thumbnail"><i data-lucide="clapperboard"></i> Thumbnail</button>
+      </nav>
+
+      <div class="media-panel" id="media-panel-status">
+        <div class="card media-card-wide">
+          <div class="card-header">
+            <h2 class="card-title"><i data-lucide="cpu"></i> Backend status</h2>
+            <p class="card-desc">Cloud thumbnails via Muse Image. Local models not installed.</p>
+          </div>
+          <div class="card-body">
+            <div class="media-status media-status-grid" id="media-status">Loading…</div>
+            <p class="hint" id="media-install-hint"></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="media-panel hidden" id="media-panel-test">
+        <div class="media-test-layout">
+          <div class="card media-test-card">
+            <div class="card-header">
+              <h2 class="card-title"><i data-lucide="sparkles"></i> Run image test</h2>
+              <p class="card-desc">Generate a test thumbnail with Muse Image (cloud). Local image models are not installed.</p>
+            </div>
+            <div class="card-body media-test-form">
+              <div class="media-prompt-block">
+                <label class="auth-label" for="media-prompt">Prompt</label>
+                <textarea class="text-input media-prompt-input" id="media-prompt" rows="8" placeholder="e.g. Bold YouTube thumbnail about transformers, large title text…"></textarea>
+              </div>
+              <div class="media-test-controls">
+                <div class="media-test-row">
+                  <label class="auth-label" for="media-backend">Backend</label>
+                  <select class="text-input" id="media-backend">
+                    <option value="auto">Auto (Muse Image)</option>
+                    <option value="nano_banana">Muse Image (cloud)</option>
+                  </select>
+                </div>
+                <button class="btn primary" id="media-generate" type="button"><i data-lucide="sparkles"></i> Run test</button>
+                <p class="hint hidden" id="media-gen-msg"></p>
+              </div>
+            </div>
+          </div>
+          <div class="card media-preview-card">
+            <div class="card-header">
+              <h2 class="card-title"><i data-lucide="eye"></i> Preview</h2>
+              <p class="card-desc">1280×720 Muse Image test output.</p>
+            </div>
+            <div class="card-body media-preview-wrap">
+              <div class="media-preview-empty" id="media-preview-empty">
+                <i data-lucide="image"></i>
+                <p>Generated image will appear here.</p>
+              </div>
+              <img id="media-preview" class="media-preview hidden" alt="Generated test image" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="media-panel hidden" id="media-panel-thumbnail">
+        <div class="card media-card-wide media-card-narrow">
+          <div class="card-header">
+            <h2 class="card-title"><i data-lucide="clapperboard"></i> Session thumbnail</h2>
+            <p class="card-desc">Regenerate a session's YouTube thumbnail (Muse Image).</p>
+          </div>
+          <div class="card-body media-thumb-form">
+            <label class="auth-label" for="media-session">Session</label>
+            <select class="text-input" id="media-session"><option value="">— select session —</option></select>
+            <button class="btn primary" id="media-regen-thumb" type="button"><i data-lucide="refresh-cw"></i> Regenerate thumbnail</button>
+            <p class="hint" id="media-regen-msg"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- =============================================== ADMIN DASHBOARD ====== -->
+    <div class="view hidden" id="view-admin">
+      <div class="admin-head">
+        <div class="admin-title"><i data-lucide="layout-dashboard"></i> Admin dashboard
+          <span class="sub">Automation, appearance, and costs from one place.</span>
+        </div>
+      </div>
+
+      <nav class="admin-subnav" id="admin-subnav">
+        <button type="button" class="admin-sub active" data-admin="palette"><i data-lucide="palette"></i> Color palette</button>
+        <button type="button" class="admin-sub" data-admin="visual"><i data-lucide="clapperboard"></i> Visual styles</button>
+        <button type="button" class="admin-sub" data-admin="social"><i data-lucide="share-2"></i> Social</button>
+        <button type="button" class="admin-sub" data-admin="cron"><i data-lucide="calendar-clock"></i> Cron jobs</button>
+        <button type="button" class="admin-sub" data-admin="costs"><i data-lucide="badge-dollar-sign"></i> Costs</button>
+        <button type="button" class="admin-sub" data-admin="harness"><i data-lucide="bot"></i> Agent Harness</button>
+      </nav>
+
+      <!-- Color palette panel -->
+      <div class="admin-panel" id="admin-panel-palette">
+        <div class="admin-panel-head">
+          <div class="admin-panel-title">App color palette
+            <span class="sub">Controls tabs, buttons, chips, and accents across the whole app for every user.</span>
+          </div>
+          <button class="btn-sm" id="palette-refresh"><i data-lucide="refresh-cw"></i> Refresh</button>
+        </div>
+        <div class="palette-presets" id="palette-presets"></div>
+        <div class="palette-custom" id="palette-custom">
+          <div class="palette-preview-bar" id="palette-preview-bar">
+            <span class="palette-preview-chip" id="palette-preview-chip">Sample</span>
+            <span class="palette-preview-chip outline" id="palette-preview-outline">Outline</span>
+          </div>
+          <div class="palette-fields" id="palette-fields"></div>
+          <button class="btn-sm accent" id="palette-save"><i data-lucide="save"></i> Save palette</button>
+          <p class="palette-msg hidden" id="palette-msg"></p>
+        </div>
+      </div>
+
+      <!-- Visual styles panel (admin only) — same named style×color presets as Studio -->
+      <div class="admin-panel hidden" id="admin-panel-visual">
+        <div class="admin-panel-head">
+          <div class="admin-panel-title">Visual styles
+            <span class="sub">Same catalog as Studio, Present, and Cron. The stage on the right is a real render of a sample lesson, made by the same code that films the video, so what you see here is what the MP4 will look like. Use Next to step through seven sample slides.</span>
+          </div>
+        </div>
+        <div class="visual-styles-layout">
+          <div class="visual-styles-picker">
+            <div class="voice-subhead"><i data-lucide="clapperboard"></i> Templates</div>
+            <div class="visual-style-filters" id="admin-visual-style-filters" role="tablist" aria-label="Templates"></div>
+            <div class="style-grid visual-preset-admin-grid" id="admin-style-grid"></div>
+            <div class="visual-color-strip" id="admin-visual-color-strip" hidden>
+              <div class="visual-color-label"><i data-lucide="palette"></i> Colors</div>
+              <div class="visual-color-swatches" id="admin-visual-color-swatches" role="listbox" aria-label="Color palette"></div>
+            </div>
+          </div>
+          <div class="visual-styles-stage">
+            <div class="visual-style-meta">
+              <div class="visual-style-name" id="admin-style-name">Explainer</div>
+              <div class="visual-style-desc" id="admin-style-desc"></div>
+              <div class="visual-style-template" id="admin-style-template"></div>
+              <div class="visual-style-swatch" id="admin-style-swatch" aria-hidden="true"></div>
+            </div>
+            <div class="visual-slide-frame" id="admin-slide-frame" data-style="explainer" data-layout="cover">
+              <div class="visual-slide" id="admin-slide-canvas"></div>
+            </div>
+            <div class="visual-slide-nav">
+              <button type="button" class="btn-sm" id="admin-slide-prev" title="Previous sample slide">
+                <i data-lucide="chevron-left"></i> Previous
+              </button>
+              <span class="visual-slide-counter" id="admin-slide-counter">1 / 10</span>
+              <button type="button" class="btn-sm" id="admin-slide-next" title="Next sample slide">
+                Next <i data-lucide="chevron-right"></i>
+              </button>
+            </div>
+            <input type="range" class="range range-sm w-full" id="admin-slide-range" min="0" max="9" value="0" aria-label="Sample slide" />
+            <div class="visual-slide-dots" id="admin-slide-dots" role="tablist" aria-label="Sample slides"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Social credentials panel -->
+      <div class="admin-panel hidden" id="admin-panel-social">
+        <div class="admin-panel-head">
+          <div class="admin-panel-title">Social media credentials
+            <span class="sub">Tokens stay masked (***). Enable a platform and optionally auto-post after assemble. Instagram needs a public <code>PUBLIC_BASE_URL</code> for Graph API media.</span>
+          </div>
+          <button class="btn-sm" id="social-creds-refresh"><i data-lucide="refresh-cw"></i> Refresh</button>
+        </div>
+        <div class="social-creds-list" id="social-creds-list"></div>
+        <p class="palette-msg hidden" id="social-creds-msg"></p>
+      </div>
+
+      <!-- Cron panel -->
+      <div class="admin-panel hidden" id="admin-panel-cron">
+        <div class="admin-panel-head">
+          <div class="admin-panel-title">Automation &amp; cron jobs</div>
+          <button class="btn-sm" id="cron-refresh"><i data-lucide="refresh-cw"></i> Refresh</button>
+        </div>
+        <div class="auto-bar" id="auto-bar">
+          <div class="auto-status">
+            <span class="auto-dot" id="auto-dot"></span>
+            <div>
+              <div class="auto-phase" id="auto-phase">Loading…</div>
+              <div class="auto-meta" id="auto-meta"></div>
+            </div>
+          </div>
+          <div class="auto-controls">
+            <label class="auto-toggle" title="Enable scheduled off-hours runs">
+              <input type="checkbox" id="auto-enabled" />
+              <span>Scheduled runs</span>
+            </label>
+            <button class="btn-sm" id="auto-resume" hidden title="Continue incomplete folders (PDF ready, video missing)">
+              <i data-lucide="rotate-cw"></i> Resume
+            </button>
+            <button class="btn-sm" id="auto-pause" hidden title="Pause after the current paper finishes">
+              <i data-lucide="pause"></i> Pause
+            </button>
+            <button class="btn-sm accent" id="auto-trigger"><i data-lucide="play"></i> Run now</button>
+          </div>
+        </div>
+        <div class="auto-resume-banner hidden" id="auto-resume-banner"></div>
+        <div class="auto-runtime" id="auto-runtime">
+          <div class="auto-runtime-title">Models for cron &amp; jobs</div>
+          <div class="auto-runtime-grid">
+            <label class="auto-runtime-field" for="rt-video-style">
+              <span>Layout template</span>
+              <select class="text-input" id="rt-video-style"></select>
+            </label>
+            <label class="auto-runtime-field" for="rt-video-theme">
+              <span>Color theme</span>
+              <select class="text-input" id="rt-video-theme"></select>
+            </label>
+            <label class="auto-runtime-field" for="rt-llm-provider">
+              <span>LLM provider</span>
+              <select class="text-input" id="rt-llm-provider">
+                <option value="muse">Muse</option>
+              </select>
+            </label>
+            <label class="auto-runtime-field" id="rt-muse-wrap" for="rt-muse-model">
+              <span>Muse model</span>
+              <input class="text-input" id="rt-muse-model" list="rt-muse-models" placeholder="muse-wonder-1.0" />
+              <datalist id="rt-muse-models"></datalist>
+            </label>
+            <label class="auto-runtime-field" for="rt-thumb-backend">
+              <span>Thumbnail / image</span>
+              <select class="text-input" id="rt-thumb-backend">
+                <option value="auto">Auto (Muse Image)</option>
+                <option value="nano_banana">Muse Image</option>
+                <option value="none">None</option>
+              </select>
+            </label>
+          </div>
+          <p class="auto-runtime-hint">Applies to scheduled papers and Run now. Studio uploads keep their own Visual style picker.</p>
+          <div class="auto-runtime-footer">
+            <button type="button" class="btn-sm accent" id="rt-save"><i data-lucide="save"></i> Save settings</button>
+            <span class="auto-runtime-eff" id="rt-effective"></span>
+          </div>
+          <p class="auto-runtime-msg hidden" id="rt-msg"></p>
+        </div>
+        <div class="auto-schedule hidden" id="auto-schedule"></div>
+        <div class="auto-input-panel hidden" id="auto-input-panel">
+          <div class="auto-input-tabs" role="tablist" aria-label="Automation inputs">
+            <button type="button" class="auto-input-tab active" data-input-tab="papers" role="tab" aria-selected="true">
+              <i data-lucide="file-text"></i> Papers
+            </button>
+            <button type="button" class="auto-input-tab" data-input-tab="topics" role="tab" aria-selected="false">
+              <i data-lucide="flame"></i> Trending AI topics
+            </button>
+          </div>
+          <div class="auto-paper-preview" id="auto-paper-preview" data-input-panel="papers"></div>
+          <div class="auto-topics-preview hidden" id="auto-topics-preview" data-input-panel="topics">
+            <div class="auto-topics-toolbar">
+              <div class="auto-paper-label">Top 4 from HN · AIM · newsletters · labs · press — or search your own</div>
+              <button type="button" class="btn-sm" id="auto-topics-refresh" title="Refresh trending pulse">
+                <i data-lucide="refresh-cw"></i> Refresh
+              </button>
+            </div>
+            <form class="auto-topics-search" id="auto-topics-search-form">
+              <input
+                type="search"
+                class="text-input"
+                id="auto-topics-search-q"
+                placeholder="Search a topic (e.g. retrieval eval, agent memory)…"
+                maxlength="160"
+                autocomplete="off"
+              />
+              <button type="submit" class="btn-sm accent" id="auto-topics-search-btn">
+                <i data-lucide="search"></i> Search
+              </button>
+              <button type="button" class="btn-sm ghost hidden" id="auto-topics-clear-search">
+                Clear
+              </button>
+            </form>
+            <div class="auto-topics-sources" id="auto-topics-sources"></div>
+            <div class="auto-topics-subnav" id="auto-topics-subnav" role="tablist" aria-label="Topic lists">
+              <button type="button" class="chip active" data-topic-view="trending" role="tab" aria-selected="true">Trending now</button>
+              <button type="button" class="chip" data-topic-view="past" role="tab" aria-selected="false">Past topics</button>
+            </div>
+            <div class="auto-topics-mode" id="auto-topics-mode"></div>
+            <div class="auto-topics-list" id="auto-topics-list"></div>
+            <div class="auto-topics-empty hidden" id="auto-topics-empty">Loading trending topics…</div>
+            <div class="auto-topics-extras hidden" id="auto-topics-extras"></div>
+            <div class="auto-topic-detail hidden" id="auto-topic-detail"></div>
+          </div>
+        </div>
+        <details class="auto-log-wrap hidden" id="auto-log-wrap">
+          <summary>Run log</summary>
+          <pre class="auto-log" id="auto-log"></pre>
+        </details>
+        <div class="cron-toolbar">
+          <div class="cron-filters" id="cron-filters">
+            <button type="button" class="cron-filter active" data-filter="queue">Queue</button>
+            <button type="button" class="cron-filter" data-filter="ready">Ready</button>
+            <button type="button" class="cron-filter" data-filter="incomplete">Incomplete</button>
+            <button type="button" class="cron-filter" data-filter="history">History</button>
+          </div>
+          <span class="cron-count" id="cron-count"></span>
+        </div>
+        <div class="cron-list" id="cron-grid"></div>
+        <div class="admin-empty hidden" id="cron-empty">No automation runs yet. Trigger a run above, or wait for the scheduled off-hours run.</div>
+      </div>
+
+      <!-- Costs panel -->
+      <div class="admin-panel hidden" id="admin-panel-costs">
+        <div class="admin-panel-head">
+          <div class="admin-panel-title">Cost tracker <span class="sub" id="cost-storage-line"></span></div>
+          <div class="cost-controls">
+            <select class="cost-range" id="cost-range">
+              <option value="7">Last 7 days</option>
+              <option value="30" selected>Last 30 days</option>
+              <option value="90">Last 90 days</option>
+            </select>
+            <select class="cost-range" id="cost-job-sort" title="Sort job breakdown">
+              <option value="recent" selected>Recent first</option>
+              <option value="cost">Highest cost</option>
+            </select>
+            <label class="cost-debug-toggle"><input type="checkbox" id="cost-debug" /> Debug log</label>
+            <button class="btn-sm" id="costs-refresh"><i data-lucide="refresh-cw"></i> Refresh</button>
+          </div>
+        </div>
+        <div class="cost-cards" id="cost-cards"></div>
+        <div class="admin-empty hidden" id="costs-empty">No usage recorded yet in this window.</div>
+        <div class="cost-breakdown hidden" id="cost-breakdown">
+          <div class="cost-subtabs" role="tablist" aria-label="Cost breakdown">
+            <button type="button" class="cost-subtab active" data-cost-tab="model" role="tab" aria-selected="true">
+              <i data-lucide="cpu"></i> By model
+            </button>
+            <button type="button" class="cost-subtab" data-cost-tab="job" role="tab" aria-selected="false">
+              <i data-lucide="clapperboard"></i> By job / session
+            </button>
+          </div>
+          <div class="cost-section" id="cost-section-model" data-cost-panel="model">
+            <div class="cost-table-wrap"><table class="cost-table" id="cost-by-model"></table></div>
+          </div>
+          <div class="cost-section hidden" id="cost-section-job" data-cost-panel="job">
+            <div class="cost-table-wrap"><table class="cost-table" id="cost-by-job"></table></div>
+            <details class="cost-debug-wrap hidden" id="cost-debug-wrap">
+              <summary>Raw call log (last 250 events)</summary>
+              <div class="cost-table-wrap"><table class="cost-table" id="cost-debug-table"></table></div>
+            </details>
+          </div>
+        </div>
+        <div class="cost-section hidden" id="cost-section-day">
+          <h3 class="cost-h"><i data-lucide="calendar"></i> By day</h3>
+          <div class="cost-bars" id="cost-by-day"></div>
+        </div>
+      </div>
+
+      <!-- Agent Harness panel -->
+      <div class="admin-panel hidden" id="admin-panel-harness">
+        <div class="admin-panel-head">
+          <div class="admin-panel-title">Agent Harness &amp; Memory Explorer
+            <span class="sub" id="harness-subtitle">Bounded ReAct controller &middot; schema-validated tools &middot; layered memory</span>
+          </div>
+          <div class="admin-panel-actions">
+            <button class="btn-sm" id="harness-refresh"><i data-lucide="refresh-cw"></i> Refresh</button>
+          </div>
+        </div>
+
+        <!-- Top architectural stats grid -->
+        <div class="harness-stats-grid">
+          <div class="harness-stat-card">
+            <div class="harness-stat-header"><i data-lucide="bot"></i> ReAct Controller</div>
+            <div class="harness-stat-val" id="harness-status-val">&hellip;</div>
+            <div class="harness-stat-desc">Plan ➔ Tool ➔ Observe ➔ Self-correct</div>
+          </div>
+          <div class="harness-stat-card">
+            <div class="harness-stat-header"><i data-lucide="wrench"></i> Tool Registry</div>
+            <div class="harness-stat-val" id="harness-tools-val">&hellip;</div>
+            <div class="harness-stat-desc" id="harness-tools-desc">Strict parameter schemas &amp; sandboxed dispatch</div>
+          </div>
+          <div class="harness-stat-card">
+            <div class="harness-stat-header"><i data-lucide="database"></i> 3-Tier Memory</div>
+            <div class="harness-stat-val" id="harness-memory-val">&hellip;</div>
+            <div class="harness-stat-desc" id="harness-memory-desc">Working memory &middot; checkpoint traces &middot; long-term store</div>
+          </div>
+          <div class="harness-stat-card">
+            <div class="harness-stat-header"><i data-lucide="shield-check"></i> Quality &amp; Sync Audit</div>
+            <div class="harness-stat-val" id="harness-audit-val">&hellip;</div>
+            <div class="harness-stat-desc" id="harness-audit-desc">Checked before every render</div>
+          </div>
+          <div class="harness-stat-card" id="harness-storage-card">
+            <div class="harness-stat-header"><i data-lucide="database"></i> SQLite storage</div>
+            <div class="harness-stat-val" id="harness-storage-val">&hellip;</div>
+            <div class="harness-stat-desc" id="harness-storage-desc">Where jobs, costs and memory are saved</div>
+          </div>
+        </div>
+
+        <!-- Subtabs: Memory Explorer, Tool Registry, Execution Traces -->
+        <div class="harness-subtabs">
+          <button type="button" class="harness-tab active" data-harness-tab="memory"><i data-lucide="database"></i> Persistent Memory Store</button>
+          <button type="button" class="harness-tab" data-harness-tab="tools"><i data-lucide="wrench"></i> Tool Registry <span id="harness-tools-tab-count"></span></button>
+          <button type="button" class="harness-tab" data-harness-tab="trace"><i data-lucide="activity"></i> Recent Execution Traces</button>
+        </div>
+
+        <!-- Tab 1: Memory Explorer -->
+        <div class="harness-tab-pane" id="harness-pane-memory">
+          <div class="harness-toolbar">
+            <input type="text" class="text-input" id="harness-mem-search" placeholder="Search memory query / tags..." />
+            <select class="text-input" id="harness-mem-ns">
+              <option value="">All Namespaces</option>
+              <option value="style_rules">style_rules</option>
+              <option value="preferences">preferences</option>
+              <option value="domain_knowledge">domain_knowledge</option>
+              <option value="feedback">feedback</option>
+            </select>
+            <button class="btn-sm accent" id="harness-mem-btn"><i data-lucide="search"></i> Query</button>
+          </div>
+
+          <details class="user-add-expander" id="harness-add-expander" style="margin-top:12px">
+            <summary><i data-lucide="plus"></i> Add Learned Memory / Style Rule</summary>
+            <form class="user-add-form" id="harness-mem-form">
+              <div class="user-add-grid">
+                <div>
+                  <label class="auth-label" for="hmem-ns">Namespace</label>
+                  <select class="text-input" id="hmem-ns">
+                    <option value="style_rules">style_rules</option>
+                    <option value="preferences">preferences</option>
+                    <option value="domain_knowledge">domain_knowledge</option>
+                    <option value="feedback">feedback</option>
+                    <option value="general">general</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="auth-label" for="hmem-key">Key Identifier</label>
+                  <input class="text-input" id="hmem-key" type="text" required placeholder="e.g. quantum_computing_guide" />
+                </div>
+                <div>
+                  <label class="auth-label" for="hmem-tags">Tags (comma-separated)</label>
+                  <input class="text-input" id="hmem-tags" type="text" placeholder="e.g. quantum, physics, style" />
+                </div>
+                <div>
+                  <label class="auth-label" for="hmem-val">Value / Rules (JSON or text)</label>
+                  <input class="text-input" id="hmem-val" type="text" required placeholder="Rule guidelines or payload" />
+                </div>
+              </div>
+              <button class="btn-sm accent" type="submit"><i data-lucide="save"></i> Store into Memory</button>
+              <p class="user-add-msg hidden" id="harness-mem-msg"></p>
+            </form>
+          </details>
+
+          <div class="harness-memory-list" id="harness-memory-list"></div>
+        </div>
+
+        <!-- Tab 2: 8-Tool Registry -->
+        <div class="harness-tab-pane hidden" id="harness-pane-tools">
+          <div class="harness-tools-grid" id="harness-tools-grid"></div>
+        </div>
+
+        <!-- Tab 3: Execution Traces -->
+        <div class="harness-tab-pane hidden" id="harness-pane-trace">
+          <div class="harness-trace-view" id="harness-trace-view">
+            <div class="admin-empty">Select or run a job to inspect the ReAct execution trace receipts.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <footer class="footer">
+      <span>&copy; 2026 <strong>s.ai</strong> &middot; All rights reserved.</span>
+    </footer>
+  </main>
+
+  <script src="/static/chitti.js"></script>
+  <script src="/static/app.js"></script>
+  <script src="/static/slide_kit.js"></script>
+</body>
+</html>

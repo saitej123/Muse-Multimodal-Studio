@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI Builder Cup — Multimodal Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <style type="text/tailwindcss">
+    @theme {
+      --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+    }
+  </style>
+  <style>
+    :root,
+    [data-theme="light"] {
+      --color-base-100: oklch(100% 0 0);
+      --color-base-200: oklch(98.4% 0.003 247);
+      --color-base-300: oklch(92.8% 0.006 255);
+      --color-base-content: oklch(21% 0.006 285);
+      --color-primary: oklch(21% 0.006 285);
+      --color-primary-content: oklch(98% 0 0);
+      --color-neutral: oklch(27% 0.01 260);
+      --color-neutral-content: oklch(98% 0 0);
+      --radius-box: 0.5rem;
+      --radius-field: 0.375rem;
+      --radius-selector: 0.25rem;
+    }
+    html, body { height: 100%; }
+    body { font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+    .deck { height: 100dvh; overflow: hidden; }
+    .slide {
+      display: none;
+      height: calc(100dvh - 3.25rem);
+      /* Scroll instead of clipping when the window is shorter than the slide. */
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+    .slide.is-active { display: flex; }
+    .slide-inner {
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+      width: 100%;
+      max-width: 72rem;
+      margin-inline: auto;
+      padding: 0.65rem 1rem 0.5rem;
+      min-height: 0;
+    }
+    .card-body { padding: 0.7rem 0.85rem !important; }
+    .stat { padding-inline: 0.85rem !important; padding-block: 0.45rem !important; }
+    .table :where(th, td) { padding-block: 0.28rem !important; }
+    @media print {
+      .deck { height: auto; overflow: visible; }
+      .no-print { display: none !important; }
+      .slide { display: flex !important; height: auto; overflow: visible; break-after: page; }
+    }
+  </style>
+</head>
+<body>
+  <div class="deck bg-base-200">
+    <header class="navbar min-h-12 border-b border-base-300 bg-base-100 px-3 sm:px-5 no-print">
+      <div class="navbar-start gap-2">
+        <span class="flex size-7 items-center justify-center rounded-field border border-base-300 text-xs font-semibold">M</span>
+        <div class="leading-tight">
+          <p class="text-sm font-semibold">Multimodal Studio</p>
+          <p class="text-[11px] text-base-content/50">AI Builder Cup · M Sai Teja (leader) · Anil Kumar</p>
+        </div>
+      </div>
+      <div class="navbar-center hidden sm:flex">
+        <div class="flex items-center gap-1" role="tablist" aria-label="Slides">
+          <button type="button" class="btn btn-xs tab-dot" data-go="0" aria-current="page">1 Cover</button>
+          <button type="button" class="btn btn-xs btn-ghost tab-dot" data-go="1">2 Problem &amp; flow</button>
+          <button type="button" class="btn btn-xs btn-ghost tab-dot" data-go="2">3 Harness · 4 weeks</button>
+        </div>
+      </div>
+      <div class="navbar-end gap-1.5">
+        <span class="hidden text-[11px] text-base-content/50 md:inline">
+          <kbd class="kbd kbd-xs">←</kbd>
+          <kbd class="kbd kbd-xs">→</kbd>
+        </span>
+        <button type="button" class="btn btn-xs btn-ghost" id="prev-btn">Previous</button>
+        <button type="button" class="btn btn-xs" id="next-btn">Next</button>
+      </div>
+    </header>
+
+    <!-- PAGE 1 -->
+    <section class="slide is-active" id="slide-0" aria-label="Cover and flowchart">
+      <div class="slide-inner">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="badge badge-xs badge-outline">AI Builder Cup</span>
+          <span class="badge badge-xs">Pitch</span>
+          <span class="badge badge-xs badge-outline">3 slides</span>
+        </div>
+        <h1 class="text-2xl font-semibold tracking-tight sm:text-3xl">
+          How Multimodal Studio turns documents into narrated video
+        </h1>
+        <p class="max-w-3xl text-sm text-base-content/60">
+          M Sai Teja (team leader) and Anil Kumar.
+          Built for a teacher or a student, not only a creator. Muse Wonder writes the slides. A studio voice speaks them so the lesson is something you would replay.
+          Cloud Run hosts the app. Jobs, costs, and agent memory stay in SQLite.
+          The hosted link opens straight in Studio — no sign-in.
+        </p>
+
+        <div class="stats stats-vertical w-full border border-base-300 bg-base-100 shadow-none sm:stats-horizontal">
+          <div class="stat">
+            <div class="stat-title text-xs">Inputs</div>
+            <div class="stat-value text-lg">Doc or topic</div>
+            <div class="stat-desc">PDF, Word, PPT, text, images, cron</div>
+          </div>
+          <div class="stat">
+            <div class="stat-title text-xs">Engine</div>
+            <div class="stat-value text-lg">7 stages</div>
+            <div class="stat-desc">Re-run any stage after an edit</div>
+          </div>
+          <div class="stat">
+            <div class="stat-title text-xs">Output</div>
+            <div class="stat-value text-lg">Synced MP4</div>
+            <div class="stat-desc">YouTube, Shorts, Reels, TikTok, Square</div>
+          </div>
+        </div>
+
+        <div class="card card-xs card-border bg-base-100">
+          <div class="card-body gap-2">
+            <div class="flex flex-wrap items-baseline justify-between gap-2">
+              <h2 class="card-title text-sm">System flowchart · Agentic AI Architecture</h2>
+              <p class="text-xs text-base-content/50">Three entries, no login on the hosted link. Autonomous ReAct harness. Layered memory & tool registry.</p>
+            </div>
+            <div class="grid gap-2 md:grid-cols-3">
+              <div class="rounded-box border border-primary/30 bg-primary/5 px-3 py-2">
+                <p class="text-[10px] font-medium uppercase tracking-wide text-primary">Entry A · Hosted demo</p>
+                <p class="text-sm font-medium">Open link, run</p>
+                <p class="text-xs text-base-content/60">Cloud Run. Straight into Studio, no sign-in.</p>
+              </div>
+              <div class="rounded-box border border-base-300 bg-base-200 px-3 py-2">
+                <p class="text-[10px] font-medium uppercase tracking-wide text-base-content/50">Entry B · Studio</p>
+                <p class="text-sm font-medium">Upload Knowledge</p>
+                <p class="text-xs text-base-content/60">PDF, Word, PPT, Markdown, images. Auto style scoring or manual lock.</p>
+              </div>
+              <div class="rounded-box border border-base-300 bg-base-200 px-3 py-2">
+                <p class="text-[10px] font-medium uppercase tracking-wide text-base-content/50">Entry C · Admin cron</p>
+                <p class="text-sm font-medium">Queue Prepared Topic</p>
+                <p class="text-xs text-base-content/60">Trending papers (HF / arXiv / Semantic Scholar) → brief → queue.</p>
+              </div>
+            </div>
+            <p class="text-center text-[10px] font-medium uppercase tracking-wide text-base-content/40">autonomous pipeline sequence</p>
+            <ul class="steps steps-vertical w-full lg:steps-horizontal">
+              <li class="step" data-content="1"><span class="text-xs font-semibold">1. Extract<span class="block font-normal text-base-content/50">VLM / Text</span></span></li>
+              <li class="step step-primary" data-content="2"><span class="text-xs font-semibold text-primary">2. Agent Harness<span class="block font-normal text-base-content/60">ReAct + Tools + Memory</span></span></li>
+              <li class="step" data-content="3"><span class="text-xs font-semibold">3. Narrate<span class="block font-normal text-base-content/50">Studio voice</span></span></li>
+              <li class="step" data-content="4"><span class="text-xs font-semibold">4. Capture<span class="block font-normal text-base-content/50">Playwright Frames</span></span></li>
+              <li class="step" data-content="5"><span class="text-xs font-semibold">5. Merge<span class="block font-normal text-base-content/50">FFmpeg Synced MP4</span></span></li>
+              <li class="step" data-content="6"><span class="text-xs font-semibold">6. Meta<span class="block font-normal text-base-content/50">Thumb + Socials</span></span></li>
+              <li class="step" data-content="7"><span class="text-xs font-semibold">7. Publish<span class="block font-normal text-base-content/50">YouTube + Multi</span></span></li>
+            </ul>
+            <p class="text-center text-xs text-base-content/60">Jobs, per-call usage costs, and agent memory live in <span class="font-medium text-base-content">SQLite</span> (<code class="rounded-field bg-base-200 px-1">workspace/sessions.db</code>, <code class="rounded-field bg-base-200 px-1">workspace/agent_memory.db</code>).</p>
+
+            <!-- Agentic AI Harness Highlight Box -->
+            <div class="rounded-box border border-primary/30 bg-primary/5 p-2.5">
+              <div class="flex flex-wrap items-center justify-between gap-1 mb-1.5">
+                <span class="badge badge-primary badge-xs font-semibold uppercase tracking-wider">Agentic AI Engine</span>
+                <span class="text-[11px] text-base-content/60">Thought → Action → Observation → Self-Correction loop</span>
+              </div>
+              <div class="grid gap-2 sm:grid-cols-3">
+                <div class="rounded-field bg-base-100 p-2 border border-base-200">
+                  <p class="text-[10px] font-semibold text-primary uppercase">3-Tier Layered Memory</p>
+                  <p class="text-xs text-base-content/80 mt-0.5"><span class="font-medium">Tier 1:</span> Working Memory (Active Plan & Scratchpad)</p>
+                  <p class="text-xs text-base-content/80"><span class="font-medium">Tier 2:</span> Checkpoint Memory (JSONL Run Receipts)</p>
+                  <p class="text-xs text-base-content/80"><span class="font-medium">Tier 3:</span> Long-Term Memory (SQLite)</p>
+                </div>
+                <div class="rounded-field bg-base-100 p-2 border border-base-200">
+                  <p class="text-[10px] font-semibold text-secondary uppercase">8-Tool Registry</p>
+                  <p class="text-xs text-base-content/70 mt-0.5 leading-relaxed">
+                    <code class="rounded bg-base-200 px-1">inspect_document</code>
+                    <code class="rounded bg-base-200 px-1">recall_memory</code>
+                    <code class="rounded bg-base-200 px-1">save_memory</code>
+                    <code class="rounded bg-base-200 px-1">score_style_and_theme</code>
+                    <code class="rounded bg-base-200 px-1">research_topic_context</code>
+                    <code class="rounded bg-base-200 px-1">synthesize_visual_layout</code>
+                    <code class="rounded bg-base-200 px-1">audit_and_fix_slides</code>
+                    <code class="rounded bg-base-200 px-1">draft_slide_deck</code>
+                  </p>
+                </div>
+                <div class="rounded-field bg-base-100 p-2 border border-base-200">
+                  <p class="text-[10px] font-semibold text-accent uppercase">Quality & Sync Audit</p>
+                  <p class="text-xs text-base-content/80 mt-0.5">Automated detection of duplicate headings and layout repetition.</p>
+                  <p class="text-xs text-base-content/80">Voiceover ↔ highlight walk dwell synchronization with mathematical collision checks.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid gap-2 sm:grid-cols-3">
+              <p class="text-xs text-base-content/70"><span class="font-medium text-base-content">Autonomous Loop.</span> Agent formulates a multi-step plan, verifies facts, scores layout styles, drafts deck, audits duplicates, and auto-repairs flaws.</p>
+              <p class="text-xs text-base-content/70"><span class="font-medium text-base-content">Observable Receipts.</span> Every tool execution is serialized with arguments, runtime latency, and results in <code class="rounded-field bg-base-200 px-1">agent_trace.jsonl</code>.</p>
+              <p class="text-xs text-base-content/70"><span class="font-medium text-base-content">Graceful Fallbacks.</span> If LLMs hit rate-limits or offline states, deterministic template synthesis guarantees uninterrupted pipeline completion.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PAGE 2 -->
+    <section class="slide" id="slide-1" aria-label="Problem and how it works">
+      <div class="slide-inner">
+        <div class="flex flex-wrap items-end justify-between gap-2">
+          <div>
+            <p class="text-[10px] font-medium uppercase tracking-wide text-base-content/50">AI Builder Cup · Page 2</p>
+            <h2 class="text-xl font-semibold tracking-tight sm:text-2xl">The problem, then the machine</h2>
+          </div>
+        </div>
+
+        <div class="grid min-h-0 flex-1 gap-2 lg:grid-cols-5">
+          <div class="card card-xs card-border bg-base-100 lg:col-span-2">
+            <div class="card-body gap-1.5">
+              <h3 class="card-title text-sm">Problem statement</h3>
+              <p class="text-xs text-base-content/70">
+                Papers and AI news already exist. A publishable explainer still needs slides, voice, timed motion, a format, and a title — every time.
+              </p>
+              <ul class="flex flex-col gap-1 text-xs text-base-content/70">
+                <li class="rounded-box bg-base-200 px-2 py-1">Manual decks drift from the source.</li>
+                <li class="rounded-box bg-base-200 px-2 py-1">Voice and picture desync on recut.</li>
+                <li class="rounded-box bg-base-200 px-2 py-1">Cron topic farming cannot sit in Premiere.</li>
+                <li class="rounded-box bg-base-200 px-2 py-1">Every video clones the last template.</li>
+              </ul>
+              <p class="text-xs text-base-content/60">
+                Capstone bet: a <span class="font-medium text-base-content">document-to-lesson compiler</span> — HTML + timed audio + browser capture — not a timeline editor.
+              </p>
+            </div>
+          </div>
+
+          <div class="card card-xs card-border bg-base-100 lg:col-span-3">
+            <div class="card-body gap-1.5">
+              <h3 class="card-title text-sm">How a job runs</h3>
+              <p class="text-xs text-base-content/60">
+                <code class="rounded-field bg-base-200 px-1 py-0.5">run_pipeline()</code> walks
+                <code class="rounded-field bg-base-200 px-1 py-0.5">STAGE_ORDER</code>.
+                Re-run one stage or from that stage onward after an edit.
+              </p>
+              <div class="overflow-x-auto">
+                <table class="table table-xs">
+                  <thead>
+                    <tr>
+                      <th>Stage</th>
+                      <th>What happens</th>
+                      <th>If missing</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="font-medium">Extract</td>
+                      <td>VLM pages or plain text. Keep paper cover.</td>
+                      <td>&lt;40 words → warn, don’t fake it.</td>
+                    </tr>
+                    <tr>
+                      <td class="font-medium">Generate</td>
+                      <td>Slide model + HTML. Auto style/theme. Topic jobs can web-brief.</td>
+                      <td>No LLM → template HTML.</td>
+                    </tr>
+                    <tr>
+                      <td class="font-medium">Narrate</td>
+                      <td>One audio per slide. Recording beats TTS.</td>
+                      <td>No TTS → skip; merge can be silent.</td>
+                    </tr>
+                    <tr>
+                      <td class="font-medium">Capture</td>
+                      <td>Playwright seeks HTML so highlights walk with VO.</td>
+                      <td>No Chromium / FFmpeg → skip.</td>
+                    </tr>
+                    <tr>
+                      <td class="font-medium">Merge</td>
+                      <td>FFmpeg stitches frames + audio to 16:9 / 9:16 / 1:1.</td>
+                      <td>Far under target duration → warn.</td>
+                    </tr>
+                    <tr>
+                      <td class="font-medium">Meta / Pub</td>
+                      <td>Title, description, thumb. Optional YouTube.</td>
+                      <td>No API → file stays local.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card card-xs card-border bg-base-100">
+          <div class="card-body gap-1.5">
+              <h3 class="card-title text-sm">Where Muse sits</h3>
+              <p class="text-xs text-base-content/60">
+                Extract, topic briefs, slide JSON, and metadata run on <span class="font-medium text-base-content">muse-wonder-1.0</span> or <span class="font-medium text-base-content">muse-spark-1.3</span>.
+                Narration is a studio neural voice. The in-app assistant listens with Muse Voice Transcribe and answers with Muse Wonder. Thumbnails are Muse Image.
+                The harness plans, calls tools, and writes a trace. A person can still edit the extract or the script and re-run one stage.
+              </p>
+            <div class="grid gap-2 md:grid-cols-3">
+              <div class="rounded-box bg-base-200 px-2 py-1.5 text-xs text-base-content/70">
+                <p class="font-medium text-base-content">1. Generate · <code class="rounded-field bg-base-100 px-1">stage_generate</code> / <code class="rounded-field bg-base-100 px-1">content.py</code></p>
+                <p>Home of the loop. Tools: research topic, score style/theme, draft slides + HTML, check coverage vs source.</p>
+              </div>
+              <div class="rounded-box bg-base-200 px-2 py-1.5 text-xs text-base-content/70">
+                <p class="font-medium text-base-content">2. Topic + Auto look · existing helpers</p>
+                <p><code class="rounded-field bg-base-100 px-1">topic_research.py</code>, <code class="rounded-field bg-base-100 px-1">topic_prep.py</code>, <code class="rounded-field bg-base-100 px-1">apply_auto_video_style</code> — wrap as tools, stop calling them as a single shot.</p>
+              </div>
+              <div class="rounded-box bg-base-200 px-2 py-1.5 text-xs text-base-content/70">
+                <p class="font-medium text-base-content">3. Cron + publish · confirm required</p>
+                <p>Admin topic queue and <code class="rounded-field bg-base-100 px-1">publish_meta</code> / YouTube. Fetch → brief → truthfulness → propose. No start or upload without confirm.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PAGE 3 -->
+    <section class="slide" id="slide-2" aria-label="Challenges and improvements">
+      <div class="slide-inner">
+        <div>
+          <p class="text-[10px] font-medium uppercase tracking-wide text-base-content/50">AI Builder Cup · Page 3</p>
+          <h2 class="text-xl font-semibold tracking-tight sm:text-2xl">Production Agentic AI Architecture & Delivery</h2>
+          <p class="text-xs text-base-content/60">Autonomous ReAct loop around generate + cron. Narrate / capture / merge stay deterministic FFmpeg + Playwright.</p>
+        </div>
+
+        <div class="grid min-h-0 gap-2 lg:grid-cols-2">
+          <div class="card card-xs card-border bg-base-100">
+            <div class="card-body gap-1">
+              <h3 class="card-title text-sm">System capabilities</h3>
+              <ul class="flex flex-col gap-1 text-xs text-base-content/70">
+                <li><span class="font-medium text-base-content">Agentic Control Loop.</span> Multi-turn ReAct loop (plan → inspect → score → draft → audit → self-repair).</li>
+                <li><span class="font-medium text-base-content">Layered Memory Engine.</span> Working memory (active plan), checkpoint memory (run receipts), long-term memory (SQLite).</li>
+                <li><span class="font-medium text-base-content">Automated Self-Critique.</span> Pre-render audit detects duplicate headings, layout repetition, and sync drift.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="card card-xs card-border bg-base-100">
+            <div class="card-body gap-1">
+              <h3 class="card-title text-sm">Resolved challenges</h3>
+              <ul class="flex flex-col gap-1 text-xs text-base-content/70">
+                <li><span class="font-medium text-base-content">Audit receipts.</span> Every model thought and tool execution is saved to <code class="rounded-field bg-base-200 px-1">agent_trace.jsonl</code>.</li>
+                <li><span class="font-medium text-base-content">Cross-session memory.</span> Persistent preferences, style rules, and domain vocabulary survive restarts.</li>
+                <li><span class="font-medium text-base-content">Deterministic safety.</span> Graceful fallback ensures pipeline never crashes if models encounter quota errors.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="card card-xs card-border bg-base-100">
+          <div class="card-body gap-2">
+            <h3 class="card-title text-sm">Agentic AI Architecture · 4 Core Pillars (Operational)</h3>
+            <div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+              <div class="rounded-box border border-base-300 bg-base-200 px-2 py-1.5">
+                <p class="text-[10px] font-medium uppercase tracking-wide text-primary">Pillar 1 · Agent Harness</p>
+                <p class="text-xs font-medium">ReAct Control Plane</p>
+                <p class="text-xs text-base-content/70"><code class="rounded-field bg-base-100 px-1">app/pipeline/agent_harness.py</code>: Bounded 7-turn loop, plan state-machine, error boundaries, and auto-fallback.</p>
+              </div>
+              <div class="rounded-box border border-base-300 bg-base-200 px-2 py-1.5">
+                <p class="text-[10px] font-medium uppercase tracking-wide text-secondary">Pillar 2 · Tool Registry</p>
+                <p class="text-xs font-medium">8 Schema-Validated Tools</p>
+                <p class="text-xs text-base-content/70">Inspect document, recall/save memory, score style/theme, web research, slide drafting, layout synthesis, quality audit.</p>
+              </div>
+              <div class="rounded-box border border-base-300 bg-base-200 px-2 py-1.5">
+                <p class="text-[10px] font-medium uppercase tracking-wide text-accent">Pillar 3 · Layered Memory</p>
+                <p class="text-xs font-medium">3-Tier Memory Architecture</p>
+                <p class="text-xs text-base-content/70"><code class="rounded-field bg-base-100 px-1">app/agent_memory.py</code>: Working memory (scratchpad), checkpoints, and long-term storage in SQLite.</p>
+              </div>
+              <div class="rounded-box border border-base-300 bg-base-200 px-2 py-1.5">
+                <p class="text-[10px] font-medium uppercase tracking-wide text-info">Pillar 4 · Observability</p>
+                <p class="text-xs font-medium">Traces & Run Receipts</p>
+                <p class="text-xs text-base-content/70">Per-job JSONL audit trails, execution receipts, self-correcting quality repair passes, and memory inspection APIs.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div role="alert" class="alert py-2">
+          <div>
+            <p class="text-sm font-medium">Submission line</p>
+            <p class="text-xs text-base-content/70">
+              M Sai Teja (team leader) and Anil Kumar. A teacher drops a chapter and gets a video a student can replay. The highlight moves with the voice.
+              App: <a class="link" href="https://multimodal-studio-469528918286.us-central1.run.app" target="_blank" rel="noopener noreferrer">multimodal-studio-469528918286.us-central1.run.app</a> (no login). Repo: <a class="link" href="https://github.com/saitej123/Muse-Multimodal-Studio" target="_blank" rel="noopener noreferrer">github.com/saitej123/Muse-Multimodal-Studio</a>.
+              Built: twelve unique looks with their own motion (stamp, flip, zoom, type-in, hand-drawn). Next: Manim-style formulas, questions mid-video, and new animation skills.
+              The 3 to 4 minute demo video is the piece still to record.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    (function () {
+      const slides = Array.from(document.querySelectorAll(".slide"));
+      const tabs = Array.from(document.querySelectorAll(".tab-dot"));
+      const prev = document.getElementById("prev-btn");
+      const next = document.getElementById("next-btn");
+      let i = 0;
+
+      function show(n) {
+        i = Math.max(0, Math.min(slides.length - 1, n));
+        slides.forEach((el, idx) => el.classList.toggle("is-active", idx === i));
+        tabs.forEach((el, idx) => {
+          el.classList.toggle("btn-ghost", idx !== i);
+          if (idx === i) el.setAttribute("aria-current", "page"); else el.removeAttribute("aria-current");
+        });
+        prev.disabled = i === 0;
+        next.textContent = i === slides.length - 1 ? "Done" : "Next";
+        history.replaceState(null, "", "#" + (i + 1));
+      }
+
+      prev.addEventListener("click", () => show(i - 1));
+      next.addEventListener("click", () => {
+        if (i < slides.length - 1) show(i + 1);
+      });
+      tabs.forEach((el) => el.addEventListener("click", () => show(Number(el.dataset.go))));
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowRight" || e.key === "PageDown") show(i + 1);
+        if (e.key === "ArrowLeft" || e.key === "PageUp") show(i - 1);
+      });
+
+      const fromHash = Number((location.hash || "#1").slice(1));
+      show(Number.isFinite(fromHash) ? fromHash - 1 : 0);
+    })();
+  </script>
+</body>
+</html>

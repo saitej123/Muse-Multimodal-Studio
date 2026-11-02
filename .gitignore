@@ -1,0 +1,74 @@
+# Secrets — never share or upload
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+client_secrets.json
+credentials.json
+token.json
+**/social_credentials.json
+
+# IDE / agent local (not for GitHub)
+.cursor/
+.vscode/
+.idea/
+*.code-workspace
+.claude/
+.agents/
+skills-lock.json
+docs/screenshots/
+screenshots/*
+# Python runtime (`.venv` is a symlink here — no trailing slash)
+.venv
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# App data, jobs, DBs (user content + sessions)
+workspace/
+automation_output/
+logs/
+.tmp/
+*.db
+*.sqlite
+*.sqlite3
+
+# Large local models / TTS weights
+models/
+*.onnx
+*.safetensors
+*.bin
+!frontend/**
+
+# Generated media / scratch
+*.mp4
+*.webm
+*.wav
+*.mp3
+lesson.pdf
+jid.txt
+
+# Knowledge graph (regenerate with `graphify update .`)
+graphify-out/
+
+# OS / editor junk
+.DS_Store
+Thumbs.db
+desktop.ini
+*~
+*.swp
+notes.md
+
+# Office lock files
+~$*
+AGENTS.md
+.python-version
+.env.example

@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="C.H.I.T.T.I.">
+  <defs>
+    <linearGradient id="chitti-g" x1="6" y1="4" x2="58" y2="60" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#6366f1"/>
+      <stop offset="0.45" stop-color="#818cf8"/>
+      <stop offset="1" stop-color="#38bdf8"/>
+    </linearGradient>
+    <linearGradient id="chitti-face" x1="22" y1="20" x2="42" y2="44" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ffffff" stop-opacity="0.98"/>
+      <stop offset="1" stop-color="#e0e7ff" stop-opacity="0.92"/>
+    </linearGradient>
+    <filter id="chitti-soft" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="1.5" stdDeviation="1.2" flood-color="#312e81" flood-opacity="0.22"/>
+    </filter>
+  </defs>
+  <!-- Rounded tile matching app primary indigo → sky -->
+  <rect x="4" y="4" width="56" height="56" rx="18" fill="url(#chitti-g)" filter="url(#chitti-soft)"/>
+  <rect x="4.75" y="4.75" width="54.5" height="54.5" rx="17.25" fill="none" stroke="#fff" stroke-opacity="0.22" stroke-width="1.25"/>
+  <!-- Soft waveform ring -->
+  <circle cx="32" cy="32" r="16.5" fill="none" stroke="#fff" stroke-opacity="0.2" stroke-width="1.5"/>
+  <circle cx="32" cy="32" r="11.5" fill="url(#chitti-face)"/>
+  <!-- Friendly face -->
+  <circle cx="27.2" cy="29" r="1.55" fill="#3730a3"/>
+  <circle cx="36.8" cy="29" r="1.55" fill="#3730a3"/>
+  <path d="M26.5 34.2c1.5 2.1 3.4 3.1 5.5 3.1s4-1 5.5-3.1" fill="none" stroke="#4338ca" stroke-width="2" stroke-linecap="round"/>
+  <!-- Voice bars -->
+  <g fill="#fff" fill-opacity="0.9">
+    <rect x="14" y="28" width="2.2" height="8" rx="1.1"/>
+    <rect x="17.6" y="25" width="2.2" height="14" rx="1.1"/>
+    <rect x="44.2" y="25" width="2.2" height="14" rx="1.1"/>
+    <rect x="47.8" y="28" width="2.2" height="8" rx="1.1"/>
+  </g>
+  <!-- Accent spark -->
+  <circle cx="48" cy="16" r="2.4" fill="#fff" fill-opacity="0.95"/>
+  <circle cx="48" cy="16" r="1.1" fill="#a5b4fc"/>
+</svg>

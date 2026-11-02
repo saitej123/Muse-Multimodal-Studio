@@ -1,0 +1,52 @@
+# Build the studio image and deploy it to Cloud Run.
+# Secrets are NOT in this file. Create them first (see the hosting steps):
+#   muse-api-key (mounted as MODEL_API_KEY)
+# --update-env-vars merges, so a later build does not wipe those secrets.
+# The app has no login screen; the deployed URL opens straight into Studio.
+timeout: 2400s
+options:
+  logging: CLOUD_LOGGING_ONLY
+  machineType: E2_HIGHCPU_8
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - -t
+      - us-central1-docker.pkg.dev/$PROJECT_ID/multimodal/studio:$BUILD_ID
+      - -t
+      - us-central1-docker.pkg.dev/$PROJECT_ID/multimodal/studio:latest
+      - .
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - --all-tags
+      - us-central1-docker.pkg.dev/$PROJECT_ID/multimodal/studio
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - multimodal-studio
+      - --image=us-central1-docker.pkg.dev/$PROJECT_ID/multimodal/studio:$BUILD_ID
+      - --region=us-central1
+      - --platform=managed
+      - --allow-unauthenticated
+      - --memory=4Gi
+      - --cpu=2
+      - --execution-environment=gen2
+      - --timeout=3600
+      - --cpu-boost
+      # CPU stays on after the HTTP request returns, so voice and capture
+      # keep running on the background thread. Concurrency must be higher
+      # than 1: the progress stream is one long request, and slide images
+      # have to load beside it. 1 caused every <img> to 429.
+      - --no-cpu-throttling
+      - --concurrency=16
+      - --max-instances=1
+      # Non-secret keys from .env.example. Secrets stay in Secret Manager
+      # (MODEL_API_KEY from secret muse-api-key). Paid search keys are not set here.
+      - --update-env-vars=HOST=0.0.0.0,RELOAD=0,LLM_PROVIDER=muse,MUSE_MODEL=muse-wonder-1.0,MUSE_VISION_MODEL=muse-wonder-1.0,MUSE_LITE_MODEL=muse-spark-1.3,MUSE_TTS_VOICE=Kore,MUSE_LIVE_VOICE=Aoede,MUSE_IMAGE_MODEL=muse-image-1.0,INTERVIEW_LIVE_MODEL=muse-wonder-1.0,TOPIC_RESEARCH_ENABLED=true
+      - --set-secrets=MODEL_API_KEY=muse-api-key:latest
+images:
+  - us-central1-docker.pkg.dev/$PROJECT_ID/multimodal/studio:$BUILD_ID
+  - us-central1-docker.pkg.dev/$PROJECT_ID/multimodal/studio:latest

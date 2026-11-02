@@ -1,0 +1,61 @@
+fastapi
+uvicorn[standard]
+python-multipart
+pydantic
+pydantic-settings
+python-dotenv
+
+# PDF parsing
+pypdf
+
+# Office / rich document parsing (Word, PowerPoint) - optional at runtime
+python-docx
+python-pptx
+# Excel career-list bulk apply (Interview → Apply)
+openpyxl
+
+# PDF/doc page -> image rendering for VLM extraction
+PyMuPDF
+
+# Muse Image returns WebP. Pillow converts thumbnails to PNG/JPEG.
+pillow
+
+# Muse calls go through httpx (below) to https://api.meta.ai/v1.
+# Narration: Kokoro ONNX. Model weights download into models/kokoro/ on first use.
+# Kyutai pocket-tts is the fallback when Kokoro is not installed (optional, pulls torch).
+kokoro-onnx
+
+# Structured logging (pipeline stages import this at startup)
+loguru>=0.7.2
+
+# Narration is Kokoro (above). Muse Voice Transcribe is speech-to-text only.
+
+# Headless capture - optional at runtime
+playwright
+
+# Computer-Use Agent for Interview auto-apply (optional; Python 3.12+).
+# https://cua.ai/docs/tutorials/drive-your-first-app
+# On WSL2, Auto defaults to Playwright for web forms; CUA needs a desktop session.
+cua>=0.1.6; python_version >= "3.12"
+cua-agent>=0.8.0; python_version >= "3.12"
+# Falls back to Playwright when CUA is not installed / fails.
+
+# Bundled FFmpeg binary fallback (used if ffmpeg is not on PATH)
+imageio-ffmpeg
+
+# HTTP client (API probes, webhooks)
+httpx
+
+# Topic web research ("Add topics") — DuckDuckGo search (free, no API key).
+# Optional paid fallbacks: set BRAVE_API_KEY / TAVILY_API_KEY / SERPER_API_KEY.
+ddgs>=9.0
+
+# Interview Prep semantic search (https://github.com/asg017/sqlite-vec)
+sqlite-vec
+
+# Thumbnails: Muse Image (MODEL_API_KEY). Local image models optional later.
+
+# YouTube upload - optional at runtime
+google-api-python-client
+google-auth-oauthlib
+google-auth-httplib2
