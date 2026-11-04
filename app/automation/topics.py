@@ -43,7 +43,7 @@ _SOURCE_LABELS = {
     "hf_blog": "Hugging Face Blog",
     "openai_news": "OpenAI",
     "anthropic": "Anthropic",
-    "deepmind": "Google DeepMind",
+    "deepmind": "DeepMind",
     "simonw": "Simon Willison",
     "techcrunch_ai": "TechCrunch AI",
     "mit_tr": "MIT Tech Review",

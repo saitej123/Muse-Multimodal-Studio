@@ -16,6 +16,7 @@ import json
 import re
 import shutil
 from pathlib import Path
+from typing import Any
 
 from fastapi import (
     FastAPI,
@@ -297,7 +298,6 @@ def voices_list(request: Request) -> dict:
         "muse_tts": tts.narration_available(),
         "engine": tts.selected_engine(),
         "model": "narration",
-        "muse_tts": tts.narration_available(),
     }
 
 
@@ -1605,7 +1605,7 @@ def run_agent_tool(req: RunToolRequest, request: Request) -> dict:
     user = require_user(request)
     from .pipeline.agent_harness import AgentHarness
 
-    harness = AgentHarness(session_id=f"tool_exec_{int(time.time())}")
+    harness = AgentHarness(session_id=f"tool_exec_{int(_time.time())}")
     res = harness.tools.execute(req.tool_name, **req.args)
     return res.to_dict()
 

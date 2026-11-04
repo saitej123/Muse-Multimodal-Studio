@@ -61,13 +61,8 @@ def _normalize(updates: dict[str, Any]) -> dict[str, Any]:
         if typ is str and not val:
             continue
         if key == "llm_provider":
-            # Hosted studio is Muse. Older muse/ollama/openai/auto values map here.
-            if str(val).lower() in {"muse", "google", "ollama", "openai", "auto"}:
-                val = "muse"
-            if val not in _PROVIDER_CHOICES:
-                raise ValueError(
-                    f"llm_provider must be one of: {', '.join(_PROVIDER_CHOICES)}"
-                )
+            # Muse is the only text, vision, and image provider. Older saved values map here.
+            val = "muse"
         if key == "thumbnail_backend":
             val = str(val).lower()
             # Legacy local backends → Nano Banana (Boogu stack removed).
@@ -129,11 +124,6 @@ def current() -> dict[str, Any]:
         "choices": {
             "llm_provider": list(_PROVIDER_CHOICES),
             "thumbnail_backend": list(_THUMB_CHOICES),
-            "muse_models": [
-                "muse-wonder-1.0",
-                "muse-spark-1.3",
-                "muse-spark-1.2",
-            ],
             "muse_models": [
                 "muse-wonder-1.0",
                 "muse-spark-1.3",

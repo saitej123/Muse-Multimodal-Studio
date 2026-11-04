@@ -84,7 +84,7 @@ EXTRA_FONTS = {
 }
 EXTRA_BODY_WEIGHT = {"chalk": 400, "terminal": 400, "pop": 600}
 
-# Google Fonts the new families need (appended to the <link> in content.py).
+# Web fonts the new families need (appended to the <link> in content.py).
 EXTRA_FONT_QUERY = "&family=Bangers&family=Lora:wght@500;700"
 
 _CARD_CLASSES = (".bullets li", ".v-card", ".v-tile", ".steps .step", ".cmp-col", ".stat-card",

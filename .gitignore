@@ -17,7 +17,6 @@ token.json
 .claude/
 .agents/
 skills-lock.json
-docs/screenshots/
 screenshots/*
 # Python runtime (`.venv` is a symlink here — no trailing slash)
 .venv
@@ -50,6 +49,7 @@ models/
 
 # Generated media / scratch
 *.mp4
+!docs/demo/*.mp4
 *.webm
 *.wav
 *.mp3
@@ -72,3 +72,5 @@ notes.md
 AGENTS.md
 .python-version
 .env.example
+~*.Template/
+docs/demo/

@@ -149,6 +149,19 @@ class JobStore:
                     or (shots[0] if shots else None)
                     or (arts.get("pages") or [None])[0]
                 )
+                if not preview:
+                    # Runs that skip page renders still keep cover.png in the job folder.
+                    # Check paths directly: store lookups would re-enter the lock held here.
+                    try:
+                        from .config import WORKSPACE_DIR
+
+                        slug = str((j.options or {}).get("folder_slug") or "").strip()
+                        for folder in ([slug] if slug else []) + [j.id]:
+                            if (WORKSPACE_DIR / folder / "cover.png").is_file():
+                                preview = f"/files/{j.id}/cover.png"
+                                break
+                    except Exception:
+                        preview = None
                 rows.append({
                     "id": j.id,
                     "filename": j.filename,

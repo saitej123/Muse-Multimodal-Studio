@@ -83,10 +83,8 @@ class Settings(BaseSettings):
     @field_validator("llm_provider", mode="before")
     @classmethod
     def _provider_is_muse(cls, v: Any) -> str:
-        val = str(v or "muse").strip().lower()
-        if val in {"", "muse", "google", "ollama", "openai", "auto"}:
-            return "muse"
-        return val
+        # Muse is the only text, vision, and image provider. Older saved values map here.
+        return "muse"
 
     @property
     def active_provider(self) -> str:

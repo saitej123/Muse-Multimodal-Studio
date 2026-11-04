@@ -30,12 +30,8 @@ if str(ROOT) not in sys.path:
 
 
 def main() -> None:
-    # Cloud Run sets K_SERVICE and PORT. Bind all interfaces or the proxy
-    # cannot reach the process. Local runs stay on localhost unless HOST is set.
-    if os.environ.get("K_SERVICE"):
-        host = os.environ.get("HOST", "0.0.0.0")
-    else:
-        host = os.environ.get("HOST", "127.0.0.1")
+    # Local runs stay on localhost unless HOST is set. Docker images set HOST=0.0.0.0.
+    host = os.environ.get("HOST", "127.0.0.1")
     port = int(os.environ.get("PORT", "8001"))
     reload = os.environ.get("RELOAD", "1") not in ("0", "false", "False")
     uvicorn.run("app.main:app", host=host, port=port, reload=reload)

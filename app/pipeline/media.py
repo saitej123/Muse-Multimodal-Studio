@@ -243,8 +243,8 @@ def _split_indices(count: int, n_workers: int) -> list[list[int]]:
 def _capture_timeout_s(manifest_path: Path) -> int:
     """Hard stop so a hung browser becomes an error instead of a stuck stage.
 
-    Sized from the screenshot count, then capped under the Cloud Run request
-    limit so the stage can report the failure before the instance is killed.
+    Sized from the screenshot count, then capped under the request time limit
+    so the stage can report the failure before the server kills the request.
     """
     try:
         cfg = json.loads(manifest_path.read_text(encoding="utf-8"))

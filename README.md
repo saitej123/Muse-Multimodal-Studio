@@ -6,7 +6,7 @@
 
 <p align="center">
   <strong>Turn any document into a narrated, publish-ready video.</strong><br>
-  Drop a chapter, notes, or a topic → pick who it is for → Muse Wonder writes the slides, a studio voice speaks them, Cloud Run serves the app.
+  Drop a chapter, notes, or a topic → pick who it is for → Meta Muse Wonder writes the slides, a studio voice speaks them.
 </p>
 
 <p align="center">
@@ -23,6 +23,7 @@
 <p align="center">
   <img src="docs/screenshots/studio.png" alt="Studio — upload knowledge, pick a format, run the pipeline" width="100%">
 </p>
+<p align="center"><sub>Walkthrough with narration and subtitles: <a href="docs/demo/muse-studio-demo.mp4">docs/demo/muse-studio-demo.mp4</a> (about 4 min). It tours the product, then shows the <em>Attention Is All You Need</em> paper run and its final output. The Attention video alone is <a href="docs/demo/attention-final-output.mp4">docs/demo/attention-final-output.mp4</a>.</sub></p>
 <p align="center"><sub>Studio: <strong>Studio · History · Image lab · Admin</strong>. Drop a source, pick a format, run Document → Extract → Slides → Voiceover → Video → Publish. There is no login screen; the app opens straight into Studio. The header mark is the Muse launch shape: a white rounded tile and a black M that draws itself.</sub></p>
 
 <p align="center">
@@ -30,47 +31,41 @@
   <img src="docs/screenshots/video-cards.png" alt="Sharp cards on the whiteboard" width="49%">
 </p>
 <p align="center">
-  <img src="docs/screenshots/video-stats.png" alt="Readable stat cards" width="49%">
+  <img src="docs/screenshots/video-takeaways.png" alt="Key takeaways slide" width="49%">
   <img src="docs/screenshots/video-flow.png" alt="A flow the viewer can read" width="49%">
 </p>
-<p align="center"><sub>A real run of <em>Attention Is All You Need</em>. The opening shows the paper and the title. Cards, numbers, and the flow stay sharp after a short draw-on. The frame the video holds is the settled pose, not a blurred entrance.</sub></p>
+<p align="center"><sub>A real run on the <em>OpenAI Software Engineering Interview Guide</em>. Slide count, length, and format follow what you pick. The opening shows the paper and the title. Cards, numbers, and the flow stay sharp after a short draw-on. The frame the video holds is the settled pose, not a blurred entrance.</sub></p>
 
-## AI Builder Cup submission
+## Meta Global AI Developer Hackathon
 
 **Team:** Multimodal Studio  
 **Leader:** M Sai Teja (leads and built it)  
-**Member:** Anil Kumar
 
-**Pitch deck:** `Template/Out/Multimodal Studio - AI Builder Cup.pptx` (filled from the official template).
-
-**What we built.** Multimodal Studio turns a chapter, notes, or a topic into a video a student can replay. Muse Wonder reads the source and writes the slides. Kokoro speaks them. The highlight walks with the sentence. Slides are filmed at 2x and the held frame is the sharp pose, so the picture does not sit in the blur of the entrance. Jobs, costs, and memory stay in SQLite on disk.
+**What we built.** Multimodal Studio turns a chapter, notes, or a topic into a video a student can replay. Meta Muse Wonder reads the source and writes the slides. Kokoro speaks them. The highlight walks with the sentence. Slides are filmed at 2x and the held frame is the sharp pose, so the picture does not sit in the blur of the entrance. Jobs, costs, and memory stay in SQLite on disk.
 
 **Who it is for.** A teacher who does not want to rebuild every PDF as slides. A tutor. A student revising. A parent walking through homework. The same path also fits a creator, but the first job is learning that is actually watchable.
 
-**Live now.** GitHub: https://github.com/saitej123/Muse-Multimodal-Studio · App: https://multimodal-studio-469528918286.us-central1.run.app (no login).
+**Repo.** GitHub: https://github.com/saitej123/Muse-Multimodal-Studio
 
 **What we want next.** A simpler Studio. Handwritten teaching templates. Manim-style motion for formulas. Predefined YouTuber looks and a custom one. Better animation models, both shipped and added by the teacher. New animation skills you can pick the way you pick a style today.
 
-**How the required products are used.**
+**How we use Meta products.**
 
-| Product | Role in this submission |
+| Product | Role in the project |
 | --- | --- |
-| **Muse** | Text and vision on `muse-wonder-1.0` (briefs on `muse-spark-1.3`) through the OpenAI-compatible Responses API at `https://api.meta.ai/v1`. Page images, PDF, audio, and video go in as content parts. Web research uses the `web_search` tool. Thumbnails on `muse-image-1.0`. The assistant listens with `muse-voice-transcribe-1.0`. Narration is local Kokoro, with Kyutai pocket-tts if Kokoro is not installed, because Model API does not synthesize speech. |
-| **Cloud Run** | Hosts the FastAPI container. `deploy/cloudbuild.yaml` builds `Dockerfile` and deploys `multimodal-studio`. |
+| **Meta Muse models** | Text and vision on `muse-wonder-1.0` (briefs on `muse-spark-1.3`) through the OpenAI-compatible Responses API at `https://api.meta.ai/v1`. Page images, PDF, audio, and video go in as content parts. Web research uses the `web_search` tool. Thumbnails on `muse-image-1.0`. The assistant listens with `muse-voice-transcribe-1.0`. Narration is local Kokoro, with Kyutai pocket-tts if Kokoro is not installed, because Model API does not synthesize speech. |
 | **SQLite** | Jobs, cost events, and agent memory live in `workspace/sessions.db` and `workspace/agent_memory.db`. Slide images, audio, and the MP4 stay in that job's workspace folder. |
 
-**The app has no login.** There are no accounts and no sign-in screen. The local URL and the hosted link both open straight into Studio.
+**The app has no login.** There are no accounts and no sign-in screen. The local URL opens straight into Studio.
 
-**Public links** (keep these up through review). The demo video is the one item still to record: 3 to 4 minutes, one real file becoming an MP4.
+**Links.**
 
-| Required item | Rule | Where it comes from |
-| --- | --- | --- |
-| Pitch deck | Use the prescribed template | `Template/Out/Multimodal Studio - AI Builder Cup.pptx` |
-| Demo video | 3 to 4 minutes, showing a real run | Record: open Studio, drop a short PDF, pick Kore, run, play the MP4. Do not exceed 4:00. |
-| Deployed prototype | Must stay up during judging | https://multimodal-studio-469528918286.us-central1.run.app |
-| GitHub repository | Public source for the whole evaluation | https://github.com/saitej123/Muse-Multimodal-Studio |
+| Item | Link |
+| --- | --- |
+| Demo video (YouTube) | https://www.youtube.com/watch?v=S6ibmWBA_Zc |
+| GitHub repository | https://github.com/saitej123/Muse-Multimodal-Studio |
 
-Set `MODEL_API_KEY` on the Cloud Run service from Secret Manager. Do not commit `.env`.
+Set `MODEL_API_KEY` in your local `.env` file. Do not commit `.env`.
 
 ---
 
@@ -101,12 +96,12 @@ Set `MODEL_API_KEY` on the Cloud Run service from Secret Manager. Do not commit 
 
 | Capability | What you get |
 | --- | --- |
-| **Ingest** | PDF, Word, PowerPoint, TXT, Markdown, images — Muse Wonder reads pages, with text fallback |
+| **Ingest** | PDF, Word, PowerPoint, TXT, Markdown, images — Meta Muse Wonder reads pages, with text fallback |
 | **Teach to an audience** | Age group + knowledge level load a teaching prompt you can edit |
 | **Plan long docs** | Split a book/paper into topics, research the web, then one video or many |
 | **Review** | Duplicate-slide check and voice ↔ highlight sync before you ship |
 | **Publish pack** | Titles, captions, tags, thumbnails for YouTube, Instagram, X, LinkedIn, TikTok, Substack, Medium |
-| **Image lab** | Muse Image cloud thumbnails plus a prompt-based test generator |
+| **Image lab** | Meta Muse Image cloud thumbnails plus a prompt-based test generator |
 | **C.H.I.T.T.I.** | In-app voice assistant (Muse listens and answers) while you work |
 | **Admin** | Color palette, layout-family preview, social credentials, cron papers, costs |
 | **History** | Every generated session — reopen, re-run, or delete (fills after you run the pipeline) |
@@ -125,7 +120,7 @@ Set `MODEL_API_KEY` on the Cloud Run service from Secret Manager. Do not commit 
     </td>
     <td width="50%">
       <img src="docs/screenshots/image-lab.png" alt="Image lab">
-      <br><sub><strong>Image lab</strong> — Muse Image thumbnails and a prompt-based test generator.</sub>
+      <br><sub><strong>Image lab</strong> — Meta Muse Image thumbnails and a prompt-based test generator.</sub>
     </td>
   </tr>
 </table>
@@ -163,7 +158,7 @@ flowchart TD
     end
 
     subgraph ExtractStage["2. Extraction & Analysis"]
-        VLM["VLM & Text Extraction<br/>(Muse Wonder / PyMuPDF)"]
+        VLM["VLM & Text Extraction<br/>(Meta Muse Wonder / PyMuPDF)"]
         Analysis["Document Analysis & Tone Classifier<br/>(Equations, Formulas, Complexity)"]
     end
 
@@ -377,11 +372,24 @@ GPU thumbnail image: `docker compose --profile gpu up --build`
 
 ## Configure
 
-`.env` holds only the keys with real values (everything else uses built-in defaults). **Never commit `.env`.** On Cloud Run, set the same keys as service env vars / secrets instead.
+### Meta Muse models
 
+All Muse calls go to Meta's Model API at `https://api.meta.ai/v1` (OpenAI-compatible Responses API), authenticated with `MODEL_API_KEY`.
+
+| Model | Brand | Used for | Where in the app |
+| --- | --- | --- | --- |
+| `muse-wonder-1.0` | Meta Muse Wonder | Text and vision: reads pages and PDFs, writes slides, reviews content, runs web research | `MUSE_MODEL` (default), extract and generate stages |
+| `muse-spark-1.3` | Meta Muse Spark | Briefs and topic planning (falls back to `muse-spark-1.2`) | `topic_prep`, topic plan, brief generation |
+| `muse-image-1.0` | Meta Muse Image | Cloud thumbnails and the Image lab | `MUSE_IMAGE_MODEL` (default), `thumbnail.py` |
+| `muse-voice-transcribe-1.0` | Meta Muse Voice Transcribe | Speech-to-text when you talk to the C.H.I.T.T.I. assistant | `app/live_audio.py` (listening) |
+
+Narration is not a Muse model. Kokoro speaks the slides locally, so the Model API never synthesizes speech.
+
+
+`.env` holds only the keys with real values (everything else uses built-in defaults). **Never commit `.env`.**
 | Setting | Purpose |
 | --- | --- |
-| `MODEL_API_KEY` | Muse Wonder, vision, web search, Muse Image thumbnails, speech-to-text |
+| `MODEL_API_KEY` | Meta Muse Wonder, vision, web search, Meta Muse Image thumbnails, speech-to-text |
 | `MUSE_MODEL` | Text and vision. Default `muse-wonder-1.0`. Briefs use `muse-spark-1.3` |
 | `MUSE_IMAGE_MODEL` | Thumbnails. Default `muse-image-1.0` |
 | `MUSE_TTS_VOICE` | Kokoro studio voice id. Default `Kore` (`af_kore`) |
@@ -447,12 +455,11 @@ Check it locally:
 ```
 app/            FastAPI, pipeline, auth, automation
 frontend/       Studio SPA
-pitch/          Capstone deck
-Template/      Official AI Builder Cup deck and the filled copy in Template/Out
-deploy/        Cloud Run build (cloudbuild.yaml)
+pitch/          Hackathon pitch page
 docker/         Container entrypoint
 scripts/        setup_venv.sh, e2e
-docs/screenshots/
+docs/screenshots/  UI and video stills used in this README
+docs/demo/         Walkthrough video (muse-studio-demo.mp4)
 .env.example    Template only — real secrets stay in .env
 ```
 
@@ -461,5 +468,5 @@ Runtime data is local and gitignored: `workspace/` (jobs + `sessions.db`), `mode
 ---
 
 <p align="center">
-  <sub>Multimodal Studio · AI Builder Cup · Anil Kumar · M Sai Teja</sub>
+  <sub>Multimodal Studio · Meta Global AI Developer Hackathon · M Sai Teja</sub>
 </p>

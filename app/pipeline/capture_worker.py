@@ -124,8 +124,8 @@ def main() -> int:
         # frame->time math matches the worker.
         page.add_init_script(f"window.__captureFps = {fps};")
         page.add_init_script(f"window.__entranceSeconds = {entrance_seconds};")
-        # "load" waits for Google Fonts and the CDN stylesheets. On Cloud Run
-        # that request often never finishes, so the capture stage spins forever.
+        # "load" waits for web fonts and the CDN stylesheets. On a slow or
+        # offline network that request often never finishes, so the capture stage spins forever.
         # DOM-ready is enough; fonts get a short extra wait and then we shoot.
         page.set_default_navigation_timeout(25000)
         page.set_default_timeout(20000)

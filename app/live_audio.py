@@ -13,7 +13,7 @@ from .logging_setup import log
 
 _LOG = log.bind(task="live-audio")
 
-# ~25 audio tokens / second (Google Live best-practices estimate).
+# ~25 audio tokens / second (rough estimate for live audio).
 AUDIO_TOKENS_PER_SEC = 25
 # 16-bit PCM mono
 PCM16_BYTES_PER_SEC = 16_000 * 2

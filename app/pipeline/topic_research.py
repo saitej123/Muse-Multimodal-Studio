@@ -8,7 +8,7 @@ Search backends (tried in parallel; first good result wins, others cancel):
 
 1. **Brave Search** — ``BRAVE_API_KEY`` (fast commercial API)
 2. **Tavily** — ``TAVILY_API_KEY`` (research-oriented)
-3. **Serper** — ``SERPER_API_KEY`` (Google results)
+3. **Serper** — ``SERPER_API_KEY`` (web search results)
 4. **DuckDuckGo** — ``ddgs`` package (free default)
 5. **Wikipedia** — REST + opensearch (always-on free fallback)
 
@@ -511,7 +511,7 @@ _AI_NEWS_SOURCES: list[tuple[str, str, str]] = [
     ("hf_blog", "Hugging Face Blog", "site:huggingface.co/blog (model OR LLM OR release)"),
     ("openai_news", "OpenAI", "site:openai.com/index OR site:openai.com/blog (GPT OR model OR research)"),
     ("anthropic", "Anthropic", "site:anthropic.com/news OR site:anthropic.com/research (Claude OR model)"),
-    ("deepmind", "Google DeepMind", "site:deepmind.google/discover/blog OR site:blog.google/technology/ai (Muse OR model)"),
+    ("deepmind", "DeepMind", "site:deepmind.google/discover/blog OR site:blog.google/technology/ai (Muse OR model)"),
     ("simonw", "Simon Willison", "site:simonwillison.net (LLM OR GPT OR Claude OR agents)"),
     ("techcrunch_ai", "TechCrunch AI", "site:techcrunch.com (OpenAI OR Anthropic OR LLM OR \"artificial intelligence\")"),
     ("mit_tr", "MIT Tech Review", "site:technologyreview.com (\"artificial intelligence\" OR LLM OR GPT)"),
